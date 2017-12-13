@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="./lib/jPicker/css/jPicker-1.1.6.css">
+    <link rel="stylesheet" href="./lib/jPicker/jPicker.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link href="../../lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="../../lib/bootstrap/css/bootstrap-datetimepicker.css" rel="stylesheet">
+    <link rel="stylesheet" href="./lib/accordion_menu/accordion_menu.css">
+    <link rel="stylesheet" href="css/index.css">
+
+
+</head>
+
+<body ondragstart="return false;">
+
+    <div class="allWrapper">
+        <!--画图的头部工具栏-->
+        <div class="header-tools-wrapper">
+            <table id="headerTools" class="header-tools" cellpadding="0" cellspacing="0" ondragstart="return false;">
+                <tr>
+                    <td class="header-tools-content">
+                        <table style="padding-left: 10px;">
+                            <tr>
+                                <td class="whitespace"></td>
+                                <td class="whitespace"></td>
+                                <td style="padding: 0px;">
+                                    <img id="DragBg" class="stateIcon" src="icon/DragBg_01.png" width="22px" height="22px" title="拖动工具">
+                                </td>
+                                <td class="whitespace"></td>
+                                <td style="padding: 0px;">
+                                    <img id="enlarge" class="stateIcon" src="icon/enlarge_01.png" width="22px" height="22px" title="放大工具">
+                                </td>
+                                <td class="whitespace "></td>
+                                <td class="tool-divider "></td>
+                                <td class="whitespace "></td>
+                                <td style="padding: 0px;">
+                                    <img class="stateIcon" id="overallsituation" src="icon/OverallSituation_01.svg" width="22px" height="22px" title="全局展示" style="border:1px solid #fff;padding:1px">
+                                </td>
+                                <td class="whitespace"></td>
+                                <td style="padding: 0px;">
+                                    <img class="stateIcon" id="Broom" src="icon/Broom.png" width="22px" height="22px" title="清除闪烁/选中" style="border:1px solid #fff;padding:1px">
+                                </td>
+                                <!-- <td class="whitespace"></td>
+                                <td style="padding: 0px;">
+                                    <img id="removeSelect" src="icon/Broom.png" width="22px" height="22px" title="清除已选" style="border:1px solid #fff;padding:1px">
+                                </td> -->
+                                <td class="whitespace "></td>
+                                <td class="tool-divider "></td>
+                                <td class="whitespace "></td>
+
+                                <td style="padding: 0px;">
+                                    <!-- <img id="Broom" src="icon/Broom.png" width="22px" height="22px" title="清除闪烁/选中" style="border:1px solid #fff;padding:1px"> -->
+                                    <span class="bitShowBtn" style="cursor:pointer;">隐藏位号</span>
+                                </td>
+
+                                <td class="whitespace "></td>
+                                <td class="tool-divider "></td>
+                                <td class="whitespace "></td>
+                                <!-- <td class="previewShow">
+                                    基础信息
+                                </td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="previewShow">
+                                    <input class="" type="text" style="height: 24px;width: 100px" id="searchValueOfDeviceNo" placeholder="请输入设备编号">
+                                </td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="  previewShow">或</td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="previewShow">
+                                    <input class=" " type="text" style="height: 24px;width: 100px" id="searchValueOfDeviceLocationNo" placeholder="请输入设备位号">
+                                </td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="previewShow">
+                                    <input id="infosearch" class="" type="button" style="height: 24px;" value="查询">
+                                </td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="tool-divider  cut-off previewShow"></td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="previewShow">
+                                    维修记录
+                                </td>
+                                <td class="whitespace previewShow"></td>
+                                <td class="previewShow">
+                                    <input type="text" style="height: 24px;width: 170px" name="startDate" id="startDate" class="form-control" placeholder="请选择起始日期"
+                                        data-date-format="yyyy-mm-dd hh:ii:ss" />
+                                </td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="previewShow">至</td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="previewShow">
+                                    <input type="text" style="height: 24px;width: 170px" name="endDate" id="endDate" class="form-control" placeholder="请选择终止日期"
+                                        data-date-format="yyyy-mm-dd hh:ii:ss" />
+                                </td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="previewShow">
+                                    <input id="fixsearch" class="" type="button" style="height: 24px;" value="查询" >
+                                </td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="tool-divider  cut-off previewShow"></td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="previewShow">
+                                    <input id="superiorQuery" type="button" style="height: 24px;" value="高级查询">
+                                </td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="tool-divider  cut-off previewShow"></td>
+                                <td class="whitespace  previewShow"></td>
+                                <td class="previewShow">
+                                    <input id="showmore" type="button" style="height: 24px;" value="更多">
+                                </td> -->
+                                <td class="previewShow">
+                                    <input id="doneadd" type="button" class="outline" style="height: 24px;width: 80px" value="发起工单">
+                                </td>
+                                <td class="previewShow">
+                                    <input id="process_change" type="button" class="outline" style="height: 24px;width: 80px;margin:0 10px;" value="阀门开关">
+                                </td>
+                                <td class="previewShow">
+                                    <input id="technology_record" type="button" class="outline" style="height: 24px;width: 80px" value="工艺转换">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="header-tools-border"></td>
+                </tr>
+            </table>
+
+            <!--<div class="more">
+                <ul>
+                    <li>
+                        <div class="more__"></div>
+                    </li>
+                    <li>
+                        <input id="abnormalBut" class="outline" name="abnormalBut" type="button" style="height: 24px;width: 80%" value="工艺异常报警">
+                    </li>-->
+            <!--<li><div class="more_"></div></li>-->
+            <!--<li><input type="button" class="outline" style="height: 24px;width: 80%" value="清除" onclick="CancelBlink()"></li>-->
+            <!--<li>
+                        <div class="more_"></div>
+                    </li>
+                    <li>
+                        <input id="doneadd" type="button" class="outline" style="height: 24px;width: 80%" value="发起工单">
+                    </li>
+                    <li>
+                        <div class="more_"></div>
+                    </li>
+                    <li>
+                        <input  id="process_change" type="button" class="outline" style="height: 24px;width: 80%" value="阀门开关">
+                    </li>
+                    <li>
+                        <div class="more_"></div>
+                    </li>
+                    <li>
+                        <input id="technology_record" type="button" class="outline" style="height: 24px;width: 80%" value="工艺转换">
+                    </li>
+                </ul>
+            </div>-->
+
+        </div>
+
+
+        <div class="downWrapper">
+            <!-- <div class="toolWrapp"></div> -->
+
+            <!-- svg画布区域 -->
+            <div class="svgWrapp">
+                <div id="holder" class="holder"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+    <script type="text/javascript" src="js/raphael1.js"></script>
+    <script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="js/FileSaver.js"></script>
+    <script type="text/javascript" src="./lib/jPicker/jpicker-1.1.6.js"></script>
+    <script type="text/javascript" src="./lib/jquery-simple-color-develop/jquery.simple-color.js"></script>
+    <script type="text/javascript" src="./lib/accordion_menu/accordion_menu.js"></script>
+    <script type="text/javascript" src="../../lib/bootstrap/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="../../lib/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="../../src/js/common/common.js"></script>
+
+    <script type="text/javascript" src="js/raphaelGeometry.raphael.js"></script>
+    <script type="text/javascript" src="js/raphealScreen.raphael.js"></script>
+    <script type="text/javascript" src="js/raphaelCollection.raphael.js"></script>
+
+    <script type="text/javascript" src="js/index_view.js"></script>
+
+
+</body>
+
+</html>

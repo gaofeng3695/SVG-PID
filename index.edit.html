@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!-- <link rel="stylesheet" href="./lib/jPicker/css/jPicker-1.1.6.css">
+    <link rel="stylesheet" href="./lib/jPicker/jPicker.css"> -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="./lib/accordion_menu/accordion_menu.css">
+    <link rel="stylesheet" href="css/index.css">
+
+</head>
+
+<body ondragstart="return false;">
+
+    <div class="allWrapper">
+        <!--画图的头部工具栏-->
+        <div class="header-tools-wrapper">
+            <table id="headerTools" class="header-tools" cellpadding="0" cellspacing="0" ondragstart="return false;">
+                <tr>
+                    <td class="header-tools-content">
+                        <table style="padding-left: 10px;">
+                            <tr>
+                                <!--<td class="whitespace"></td>-->
+                                <td style="padding: 0px;">
+                                    <span>版本选择</span>
+                                    <select id="selectStationPidVersion" name="selectStationPidVersion" class="selectpicker  form-control" style="width:auto;padding:0.2%;margin:0px">
+                                       <option value="">请选择版本</option>
+                                   </select>
+                                </td>
+                                <td class="whitespace"></td>
+                                <td class="tool-divider"></td>
+                                <td id="save" class="save" style="padding: 0px;">
+                                    <img class="stateIcon saveBtn" src="icon/save_01.png" title="保存">
+                                </td>
+
+                                <td style="padding: 0px;" class="saveas">
+                                    <img class="stateIcon" src="icon/save_01.png" title="另存为">
+                                </td>
+                                <td style="padding: 0px;" class="publish">
+                                    <img class="stateIcon" src="icon/fabu_01.png" title="发布">
+                                </td>
+                                <td style="padding: 0px;" class="download">
+                                    <img class="stateIcon downloadBtn" src="icon/download_01.png" title="下载">
+                                </td>
+
+                                <td class="whitespace"></td>
+                                <td class="tool-divider"></td>
+                                <td class="whitespace"></td>
+
+                                <td style="padding: 0px;">
+                                    <img id="DragBg" class="stateIcon" src="icon/DragBg_01.png" width="22px" height="22px" title="拖动工具">
+                                </td>
+                                <!-- <td class="whitespace"></td> -->
+                                <td style="padding: 0px;">
+                                    <img id="enlarge" class="stateIcon" src="icon/enlarge_01.png" width="22px" height="22px" title="放大工具">
+                                </td>
+
+
+
+
+                                <td class="whitespace"></td>
+                                <td class="tool-divider"></td>
+                                <td class="whitespace"></td>
+
+
+                                <td style="padding: 0px;">
+                                    <img id="overallsituation" class="stateIcon" src="icon/OverallSituation_01.svg" width="22px" height="22px" title="全局展示" style="border:1px solid #fff;padding:1px">
+                                </td>
+
+
+                                <td class="whitespace "></td>
+                                <td class="tool-divider "></td>
+                                <td class="whitespace "></td>
+
+
+                                <td style="padding: 0px;">
+                                    <img class="stateIcon addPointBtn" src="icon/addpoint_01.png" title="增加管点">
+                                </td>
+
+
+                                <td class="whitespace"></td>
+                                <td class="tool-divider"></td>
+                                <td class="whitespace"></td>
+
+
+                                <td class="editShow">
+                                    <img class="stateIcon copyBtn copy-segment" src="icon/copy_01.png" title="复制">
+                                </td>
+                                <td class="editShow">
+                                    <img class="stateIcon pasteBtn paste-segment" src="icon/paste_01.png" title="粘贴">
+                                </td>
+
+                                <td class="whitespace"></td>
+                                <td class="tool-divider"></td>
+                                <td class="whitespace"></td>
+
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon alignBtn" data-type="middle" src="icon/horizontalmiddle_01.png" title="水平居中">
+                                </td>
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon alignBtn" data-type="bottom" src="icon/horizontalbottom_01.png" title="水平居下">
+                                </td>
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon alignBtn" data-type="top" src="icon/horizontaltop_01.png" title="水平居上">
+                                </td>
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon alignBtn" data-type="left" src="icon/verticalleft_01.png" title="垂直居左">
+                                </td>
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon alignBtn" data-type="center" src="icon/verticalmiddle_01.png" title="垂直居中">
+                                </td>
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon alignBtn" data-type="right" src="icon/verticalright_01.png" title="垂直居右">
+                                </td>
+
+                                <td class="whitespace"></td>
+                                <td class="tool-divider"></td>
+                                <td class="whitespace"></td>
+
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon rotateBtn" data-angle="0" src="icon/0_01.png" title="旋转0度">
+                                </td>
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon rotateBtn" data-angle="45" src="icon/45_01.png" title="旋转45度">
+                                </td>
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon rotateBtn" data-angle="90" src="icon/90_01.png" title="旋转90度">
+                                </td>
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon rotateBtn" data-angle="180" src="icon/180_01.png" title="旋转180度">
+                                </td>
+                                <td style="padding: 0px;" class="editShow">
+                                    <img class="stateIcon rotateBtn" data-angle="270" src="icon/270_01.png" title="旋转270度">
+                                </td>
+
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="header-tools-border"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="downWrapper">
+            <!-- 左侧图标库 -->
+            <div class="toolWrapp">
+                <div id="shapepanel">
+                    <ul id="accordion" class="accordion eleMenu">
+                        <li>
+                            <div class="link">基本元件
+                                <i class="fa fa-chevron-down"></i>
+                            </div>
+                            <div class="submenu">
+                                <table class="toolsTable icon_basic" style="background-color: #FFFFFF;" ondragstart="return false;" cellpadding="0" cellspacing="0">
+                                    <!-- <tr>
+                                                <td id="td01" title="球阀" onmousedown="drawMouseDown(36, 18, ShapeConfig.FACILITY_BAV, $(this).attr('url'), $(this).attr('warningurl'));">
+                                                    <img id="image01" style="width: 36px; height: 18px;" src="">
+                                                </td>
+                                                <td id="td02" title="闸阀" onmousedown="drawMouseDown(36, 18,  ShapeConfig.FACILITY_GAV, $(this).attr('url'), $(this).attr('warningurl'));">
+                                                    <img id="image02" style="width: 36px; height: 18px;" src="">
+                                                </td>
+                                            </tr> -->
+                                </table>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="link">线条
+                                <i class="fa fa-chevron-down"></i>
+                            </div>
+                            <div class="submenu">
+                                <table class="toolsTable icon_line" style="background-color: #FFFFFF;" ondragstart="return false;" cellpadding="0" cellspacing="0">
+                                    <!-- <tr>
+                                                <td id="td27" title="实线" >
+                                                    <img id="image27" style="width: 35px; height: 35px;" src="">
+                                                </td>
+                                                <td id="td33" title="虚线" >
+                                                    <img id="image33" style="width: 35px; height: 35px;" src="">
+                                                </td>
+                                            </tr> -->
+                                </table>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="link">其它图标
+                                <i class="fa fa-chevron-down"></i>
+                            </div>
+                            <div class="submenu">
+                                <table class="toolsTable icon_other" style="background-color: #FFFFFF;" ondragstart="return false;" cellpadding="0" cellspacing="0">
+                                    <!-- <tr>
+                                                <td id="td37" title="">
+                                                    <img id="image37" src="" style="width:35px;height: 35px; ">
+                                                </td>
+                                                <td id="td38" title="" >
+                                                    <img id="image38" src="" style=" width:35px;height:35px;">
+                                                </td>
+                                            </tr> -->
+
+                                </table>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- svg画布区域 -->
+            <div class="svgWrapp">
+                <div id="holder" class="holder"></div>
+            </div>
+        </div>
+    </div>
+
+    <!--属性悬浮框-->
+    <table id="attributepanel" class="attributeTable" style="display:none">
+        <tr>
+            <td id="attributeheader" class="attribute-header" style="text-align:left">属性</td>
+        </tr>
+        <tr id="attributeview" style="display: none;">
+            <td>
+                <table id="attributeTable" cellpadding="0" cellspacing="0">
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- <textarea id="textarea" style="position: fixed; display:block; bottom: 0px; width: 1000px; height : 800px;"></textarea> -->
+
+    <!--保存文件 bug现在区域-->
+    <!-- <textarea id="textarea" style="position: fixed; display:none; bottom: 0px; width: 300px; height : 200px;"></textarea> -->
+
+    <script type="text/javascript" src="js/raphael.js"></script>
+    <script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
+    <!-- <script type="text/javascript" src="js/FileSaver.js"></script> -->
+    <!-- <script type="text/javascript" src="./lib/jPicker/jpicker-1.1.6.js"></script> -->
+    <script type="text/javascript" src="./lib/jquery-simple-color-develop/jquery.simple-color.js"></script>
+    <script type="text/javascript" src="./lib/accordion_menu/accordion_menu.js"></script>
+    <!-- <script type="text/javascript" src="../../lib/bootstrap/js/bootstrap-datetimepicker.js"></script>
+	<script type="text/javascript" src="../../lib/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script> -->
+    <script type="text/javascript" src="../../src/js/common/common.js"></script>
+
+    <script type="text/javascript" src="js/element.config.js"></script>
+    <script type="text/javascript" src="js/attribute.config.js"></script>
+    <script type="text/javascript" src="js/raphaelGeometry.raphael.js"></script>
+    <script type="text/javascript" src="js/raphealScreen.raphael.js"></script>
+    <script type="text/javascript" src="js/raphaelCollection.raphael.js"></script>
+
+    <!-- <script type="text/javascript" src="../editpid/js/editpid.js"></script> -->
+    <script type="text/javascript" src="js/attr.edit.js"></script>
+    <script type="text/javascript" src="js/index.edit.js"></script>
+
+
+</body>
+
+</html>

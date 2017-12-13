@@ -1,0 +1,241 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+HTML,body{
+    width: 100%;
+    height:100%;
+    background: #edf1f2;
+    overflow: hidden;
+}
+body {
+    font-size: 12px;
+    font-family: '寰蒋闆呴粦';
+    color: #333333;
+     /*濡傛灉鐢诲竷瓒呭嚭瑙嗗彛锛屾坊鍔犳粴鍔ㄦ潯*/
+    overflow: auto;
+}
+ul,li{
+    list-style: none;
+}
+/**************************************************/
+.allWrapper{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    display: -webkit-flex;
+    flex-direction:  column;
+    overflow: hidden;
+}
+
+.downWrapper{
+    flex: 1;
+    display: flex;
+    display: -webkit-flex;
+    flex-direction:  row;
+}
+
+.svgWrapp{
+    flex: 1;
+    overflow: auto;
+    border: solid 1px #ddd;
+    background:url(../image/canvas.png) repeat;
+    background-color: #FFFFFF;
+}
+.toolWrapp{
+    overflow: hidden;
+    /* width:100px;
+    background: red; */
+}
+
+
+/**************************************************/
+/*鐢诲浘鐨勯潰鏉�*/
+/*鐢诲竷*/
+.holder{
+    width: 100%;
+    height: 100%;
+    /* overflow: auto; */
+}
+/**************************************************/
+
+/*宸︿晶鍏冧欢鑿滃崟*/
+
+
+.shapepanel{
+    /* position: fixed;
+    top: 42px;
+    left: 0px; */
+    font-size: 0;
+    height:100%;
+}
+.eleMenu{
+    width:110px;
+    display: inline-block;
+    margin: 0;
+    vertical-align: top;
+}
+
+.split-line{
+    display: inline-block;
+    width: 10px;
+    height:100%;
+    background-color: #A8A8A8;
+    cursor: pointer;
+}
+
+.toolsTable {
+    border-spacing: 2px;
+}
+.toolsTable td {
+    width: 50px;
+    height: 35px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    font-size: 8px;
+    overflow: hidden;
+}
+
+/**************************************************/
+/*澶撮儴宸ュ叿鏍�*/
+.header-tools-wrapper{
+    width:100%;
+    overflow: hidden;
+}
+.header-tools{
+    width:100%;
+    /* position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    border: 0px; */
+}
+.header-tools-content{
+    height: 40px;
+     background-color: #FFFFFF;
+     vertical-align: middle;
+}
+.header-tools-border{
+    height: 2px;
+    background-color: #CCCCCC;
+}
+/*宸ュ叿鏍忓垎鍓茬珫绾�*/
+
+.tool-divider {
+    width: 1px;
+    border-left: 1px solid #b7b5b7;
+}
+
+.whitespace {
+    padding: 3px;
+}
+
+/**************************************************/
+
+/*灞炴�ф偓娴獥*/
+.attributeTable {
+    border: 1px solid #ddd;
+    border-spacing: 1px;
+    position: fixed;
+    width: 200px;
+    background-color: #FFFFFF;
+}
+.attributeTable td {
+    height: 30px;
+    text-align: right;
+    vertical-align: middle;
+    padding-right: 10px;
+}
+.attribute-header{
+    height: 30px;
+    background-color: #A8A8A8;
+    text-align: left;
+    padding-left: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+/*鏂囧瓧濉啓宸ュ叿*/
+.text-input-tools{
+    display: none;
+    width:183px;
+    height: 180px;
+    border:1px solid #ddd;
+    text-align: center;
+    background: #fff;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.btnMouse{
+    width: 100%;
+    outline: none;
+}
+.btnMouseDown{
+    background-color: #eeeeee;
+    border:1px solid red;
+}
+.btnMouseUp{
+    background-color: #FFFFFF;
+    border: 0;
+}
+#infoAlert{
+    width:300px;
+    height:100px;
+    opacity: 0.5;
+    background: #000000;
+    position: fixed;
+    top:0;
+    left: 0;
+    right:0;
+    bottom:0;
+    margin: auto;
+    display: none;
+    font-size: 20px;
+    line-height: 100px;
+    text-align: center;
+    color: red
+}
+#ConnectionPrompt{
+    height: 20px;
+    width: 70px;
+    line-height: 20px;
+    position: fixed;
+    top:-1000px;
+    left: -1000px;
+}
+.HIDE{
+    display: none;
+}
+.more{
+    position: fixed;
+    z-index: 999;
+    top: 45px;
+    left: 125px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #c5c4c4;
+    padding: 5px;
+    width: 134px;
+    display:none;
+}
+.more_{
+    margin: auto;
+    border-bottom: 1px solid #efefef;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    width: 90%;
+}
+.more__{
+    margin-top: 7px;
+}
+.outLine{
+    outline:none;
+}
+.outline:hover{
+    outline:none;
+}
+.outline:active{
+    outline:none;
+}
