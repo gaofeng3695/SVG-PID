@@ -196,10 +196,10 @@
         this.overFun = null;
         this.outFun = null;
         this.canMove = true;
-        this.setMovable = function(bool){
+        this.setMovable = function (bool) {
             this.canMove = bool;
-            if(this.bShape ) this.bShape.canMove = bool;
-            if(this.eShape ) this.eShape.canMove = bool;
+            if (this.bShape) this.bShape.canMove = bool;
+            if (this.eShape) this.eShape.canMove = bool;
         };
         this.setText = function () {
             if (this.raphael) {
@@ -239,15 +239,14 @@
                     this.textShape.drag(textMove, textDragger, textUp);
                     this.textRaphael = this.raphael;
                     this.textRaphaelScreen = this.raphaelScreen;
-                    this.textShape.click(textClick);
                     this.textShape.mouseover(function (e) {
                         if (_this.overFun) {
-                            _this.overFun(_this,e);
+                            _this.overFun(_this, e);
                         }
                     });
                     this.textShape.mouseout(function (e) {
                         if (_this.outFun) {
-                            _this.outFun(_this,e);
+                            _this.outFun(_this, e);
                         }
                     });
                 }
@@ -295,16 +294,15 @@
                     }
                     this.textShape2.drag(textMove, textDragger, textUp);
                     this.textRaphael = this.rephael;
-                    this.textShape2.click(textClick);
 
                     this.textShape2.mouseover(function (e) {
                         if (_this.overFun) {
-                            _this.overFun(_this,e);
+                            _this.overFun(_this, e);
                         }
                     });
                     this.textShape2.mouseout(function (e) {
                         if (_this.outFun) {
-                            _this.outFun(_this,e);
+                            _this.outFun(_this, e);
                         }
                     });
                 }
@@ -325,8 +323,7 @@
         };
         this.select = function () { //设定图形为选中状态
             if (this.extent) {
-                if (this.facilityType != "FACILITY_CREATETEXT") {
-                }
+                if (this.facilityType != "FACILITY_CREATETEXT") {}
                 this.extent.show();
             }
             this.selected = true;
@@ -490,17 +487,14 @@
             if (obj.dasharray) {
                 attr.dasharray = obj.dasharray;
             }
-            if (obj.freeLineList) {
-                attr.freeLineList = obj.freeLineList;
-            }
             return attr;
         };
         this.addConnectPoint = function (x, y) {
             if (this.geometryType !== 'GEOMETRY_POLYGON') return;
             var box = this.shape.getBBox();
             this.customJoinPoint.push({
-                "dx": (x - box.x)/this.width,
-                "dy":(y - box.y)/this.height
+                "dx": (x - box.x) / this.width,
+                "dy": (y - box.y) / this.height
             });
         };
         var aConnectPoints = [];
@@ -524,7 +518,7 @@
             });
             aConnectPoints = [];
         };
-        this.getDirection = function (box) { //获取连接点的坐标
+        this.getDirection = function (box) { //获取连接点的坐标,依赖入参的box和customJoinPoint的坐标数组，返回所有连接点数组
             var pointList = [];
             pointList.push({
                 x: box.x + box.width / 2,
@@ -546,8 +540,8 @@
             if (this.customJoinPoint.length > 0) {
                 for (var i = 0; i < this.customJoinPoint.length; i++) {
                     pointList.push({
-                        x: box.x + this.customJoinPoint[i].dx*this.width,
-                        y: box.y + this.customJoinPoint[i].dy*this.height
+                        x: box.x + this.customJoinPoint[i].dx * this.width,
+                        y: box.y + this.customJoinPoint[i].dy * this.height
                     })
                 }
             }
@@ -570,7 +564,7 @@
         };
         var textMove = function (dx, dy, x, y, e) {
             if (_this.canMove) {
-                var scale = _this.raphaelScreen.zoom ||　1;
+                var scale = _this.raphaelScreen.zoom || 　1;
                 dx = dx / scale;
                 dy = dy / scale;
 
@@ -609,44 +603,6 @@
             }
 
         };
-
-        /*********** 新增 ************/
-        // var textSetExtent = function (self) {
-        //     if (isNutextxtent) {
-        //         if (_this.textRotateAble) {
-        //             var box = self.getBBox();
-        //             self.textExtent = _this.textRaphael.rect(box.x - 10, box.y - 10, box.width + 20, box.height + 20, 4);
-        //             self.textExtent.attr({
-        //                 'stroke-dasharray': ['-'],
-        //                 stroke: '#FF00FF',
-        //             });
-        //             self.textExtent.toBack();
-        //             self.textExtent.show();
-        //             _this.textExtentShow = true;
-        //         }
-        //     } else {
-        //         if (_this.textRotateAble) {
-        //             self.textExtent.show();
-        //             var box = self.getBBox();
-        //             self.textExtent.attr({
-        //                 x: box.x - 10,
-        //                 y: box.y - 10,
-        //                 width: box.width + 20,
-        //                 height: box.height + 20,
-        //             })
-        //             _this.textExtentShow = true;
-        //         } else {
-        //             self.textExtent.hide();
-        //             _this.textExtentShow = false;
-        //         }
-        //     }
-        // }
-        var textClick = function () {
-            _this.textRotateAble = true;
-            // pageMeta.textSelectedState.push(this);
-            // pageMeta.textSelectedStateRotate = this;
-            //textSetExtent(this);
-        };
     };
 
     //*******************************************************************************************************************************************
@@ -656,40 +612,40 @@
         var _this = this;
         GeometryBean.call(this);
         this.geometryType = ShapeConfig.GEOMETRY_POLYGON; // 多边形
-        this.state = null,
-            this.lineList = [];
-        this.freeLineList = [];
-        this.freeDirection = {
-            x: 0,
-            y: 0,
-            differenceX: 0,
-            differenceY: 0
-        };
-        this.hasBackShape = false;
-        // this.backShape = null;
-        // this.middleShapeType = ShapeConfig.SHAPE_RECT;
-        // this.middleWidth = 6;
-        // this.middleHeight = 6;
-        // this.middleColor = '#999999';
-        // this.middleFillColor = '#999999';
-
         this.shapeType = ShapeConfig.SHAPE_RECT; // 矩形
+
+        this.lineList = []; //存放连接线的实例
+        // this.freeLineList = [];
+        // this.freeDirection = {
+        //     x: 0,
+        //     y: 0,
+        //     differenceX: 0,
+        //     differenceY: 0
+        // };
+        //this.hasBackShape = false;
+
         this.border = 2;
         this.radius = 5;
         this.angle = 0;
         this.textAngle = 0;
         this.textAngle2 = 0;
-        this.autoLine = false;
+
+        //this.autoLine = false;
+
         this.opacity = 1;
         this.toTop = false;
         this.magnification = 1; //放大倍数
-        this.setState = function (state) { //设置状态
-            if (this.shape) {
-                this.setShapeSrc(state);
-                this.state = state;
-            }
-        };
-        this.setShapeSrc = function (state) { //改变shape的图片
+        this.state = null,
+
+            //setState、setShapeSrc、getState 三个函数只针对于图片
+
+            this.setState = function (state) { //设置状态，只针对于图片
+                if (this.shape) {
+                    this.setShapeSrc(state);
+                    this.state = state;
+                }
+            };
+        this.setShapeSrc = function (state) { //改变图片的src
             if (this.shape) {
                 var arr = this.color.split('/');
                 var name = arr[arr.length - 1].split('.')[0];
@@ -700,12 +656,12 @@
                 });
             }
         };
-        this.getState = function () { //获取url里面的state
+        this.getState = function () { //获取图片src里面的state
             var arr = this.color.split('/');
             var name = arr[arr.length - 1].split('.')[0];
             return newname = name.split('_')[1];
         };
-        this.createShape = function () {
+        this.createShape = function () { //创建图形
             if (this.raphael) {
                 this.angle = this.angle % 360;
                 if (this.shapeType == ShapeConfig.SHAPE_RECT) { //
@@ -742,16 +698,15 @@
                 /*********************/
                 this.shape.drag(shapeMove, shapeDragger, shapeUp); //shapeMove, shapeDragger, shapeUp
                 this.shape.dblclick(shapeDbclick);
-                //this.shape.click(shapeClick);
 
                 this.shape.mouseover(function (e) {
                     if (_this.overFun) {
-                        _this.overFun(_this,e);
+                        _this.overFun(_this, e);
                     }
                 });
                 this.shape.mouseout(function (e) {
                     if (_this.outFun) {
-                        _this.outFun(_this,e);
+                        _this.outFun(_this, e);
                     }
                 });
                 if (this.angle != 0) {
@@ -765,7 +720,7 @@
             }
             return this;
         };
-        this.moveTo = function () { //移动图形，重新设定其宽和高
+        this.moveTo = function () { //根据已经修改的属性值移动图形，重新设定其宽和高和背景、连接线等
             if (this.angle != 0) {
                 this.shape.rotate(-this.angle);
             }
@@ -799,36 +754,13 @@
             this.setExtent2();
             return this;
         };
-        this.setWarning = function (state) {
-            if (state) {
-                if (this.shapeType == ShapeConfig.SHAPE_IMAGE) {
-                    this.shape.attr({
-                        src: this.warningColor,
-                    });
-                } else {
-                    this.shape.attr({
-                        fill: this.warningFillColor,
-                        stroke: this.warningColor,
-                    });
-                }
-            } else {
-                if (this.shapeType == ShapeConfig.SHAPE_IMAGE) {
-                    this.shape.attr({
-                        src: this.color,
-                    });
-                } else {
-                    this.shape.attr({
-                        fill: this.fillColor,
-                        stroke: this.color,
-                    });
-                }
-            }
-        };
-        this.rotate = function (angle) {
+        this.rotate = function (angle) { //旋转图形，需要调整虚线框、背景框、连接线的位置
             angle = angle % 360;
+            //先旋转会0度
             if (this.angle != 0) {
                 this.shape.rotate(-this.angle);
             }
+            //再旋转回新的度数
             if (angle != 0) {
                 this.shape.rotate(angle);
             }
@@ -838,131 +770,12 @@
             this.resetLine();
             return this;
         };
-        this.setCenter = function () {
+        this.setCenter = function () { //设置图形中心点
             this.cx = this.x;
             this.cy = this.y;
             return this;
         };
-        this.resetSingleLine = function (line) {
-            if (this.autoLine) {
-                //this.autoResetSingleLine(line);
-            } else {
-                this.fixedResetSingleLine(line);
-            }
-            return this;
-        };
-        this.autoResetSingleLine = function (line) {
-            var box1 = null;
-            var box2 = null;
-            var p1 = [];
-            var p2 = [];
-            var resetBegin = true;
-            var resetEnd = true;
-            if (line.beginShape == this) {
-                box1 = line.beginShape.shape.getBBox();
-                if (line.geometryType == ShapeConfig.GEOMETRY_CURVELINE) {
-                    p2 = [{
-                        x: line.mShape.x,
-                        y: line.mShape.y
-                    }];
-                    resetEnd = false;
-                } else if (line.endShape) {
-                    box2 = line.endShape.shape.getBBox();
-                } else {
-                    p2 = [{
-                        x: line.ex,
-                        y: line.ey
-                    }];
-                }
-            } else if (line.endShape == this) {
-                box2 = line.endShape.shape.getBBox();
-                if (line.geometryType == ShapeConfig.GEOMETRY_CURVELINE) {
-                    p1 = [{
-                        x: line.mShape.x,
-                        y: line.mShape.y
-                    }];
-                    resetBegin = false;
-                } else if (line.beginShape) {
-                    box1 = line.beginShape.shape.getBBox();
-                } else {
-                    p1 = [{
-                        x: line.bx,
-                        y: line.by
-                    }];
-                }
-            }
-            if (box1) {
-                p1 = [];
-                p1.push({
-                    x: box1.x + box1.width / 2,
-                    y: box1.y
-                });
-                p1.push({
-                    x: box1.x + box1.width / 2,
-                    y: box1.y + box1.height
-                });
-                p1.push({
-                    x: box1.x,
-                    y: box1.y + box1.height / 2
-                });
-                p1.push({
-                    x: box1.x + box1.width,
-                    y: box1.y + box1.height / 2
-                });
-            }
-            if (box2) {
-                p2 = [];
-                p2.push({
-                    x: box2.x + box2.width / 2,
-                    y: box2.y
-                });
-                p2.push({
-                    x: box2.x + box2.width / 2,
-                    y: box2.y + box2.height
-                });
-                p2.push({
-                    x: box2.x,
-                    y: box2.y + box2.height / 2
-                });
-                p2.push({
-                    x: box2.x + box2.width,
-                    y: box2.y + box2.height / 2
-                });
-            }
-            var dis = 100000000;
-            var bx = 0;
-            var by = 0;
-            var ex = 0;
-            var ey = 0;
-            for (var b = 0; b < p1.length; b++) {
-                for (var c = 0; c < p2.length; c++) {
-                    var dx = Math.abs(p1[b].x - p2[c].x);
-                    var dy = Math.abs(p1[b].y - p2[c].y);
-                    if (dis > dx * dx + dy * dy) {
-                        dis = dx * dx + dy * dy;
-                        bx = p1[b].x;
-                        by = p1[b].y;
-                        ex = p2[c].x;
-                        ey = p2[c].y;
-                    }
-                }
-            }
-            if (resetBegin) {
-                line.bx = bx;
-                line.by = by;
-                line.bShape.x = bx;
-                line.bShape.y = by;
-            }
-            if (resetEnd) {
-                line.ex = ex;
-                line.ey = ey;
-                line.eShape.x = ex;
-                line.eShape.y = ey;
-            }
-            line.moveTo();
-            return this;
-        };
-        this.fixedResetSingleLine = function (line) {
+        this.resetSingleLine = function (line) { //重新定位单条连接线
             var box = null;
             var resetBegin = false;
             var resetEnd = false;
@@ -973,7 +786,7 @@
                 box = line.endShape.shape.getBBox();
                 resetEnd = true;
             }
-            var ponits = this.getDirection(box).concat(this.freeLineList);
+            var ponits = this.getDirection(box);
             var point = ponits[this.direction[line.id]];
             var x = point.x;
             var y = point.y;
@@ -985,16 +798,16 @@
                 line.ex = x;
                 line.ey = y;
             }
-            line.moveTo();
+            line.moveTo(); //设置line的位置
             return this;
         };
-        this.resetLine = function () {
+        this.resetLine = function () { //重新点位所有连接线
             for (var a = 0; a < this.lineList.length; a++) {
                 this.resetSingleLine(this.lineList[a]);
             }
             return this;
         };
-        this.addLine = function (lineBean) {
+        this.addLine = function (lineBean) { //为图形添加连接线，更新lineList和direction变量
             var x = 0;
             var y = 0;
             var dir = 0;
@@ -1010,11 +823,7 @@
             var box = this.shape.getBBox();
             var pointList = this.getDirection(box);
 
-            // 此处以后会添加自由点
-            // 自由点的方位表示，要用百分比的方式
-            // 此处改动会影响之前画的图
-            // 待讨论
-
+            //遍历连接点数组，找到最近的一个连接点
             var dis = 100000000;
             for (var b = 0; b < pointList.length; b++) {
                 var dx = Math.abs(pointList[b].x - x);
@@ -1025,6 +834,8 @@
                     dir = b;
                 }
             }
+
+            // 如果
             var add = true;
             for (var i = 0; i < this.lineList.length; i++) {
                 if (this.lineList[i].id == lineBean.id) {
@@ -1039,7 +850,7 @@
             this.resetSingleLine(lineBean);
             return this;
         };
-        this.removeLine = function (lineBean) {
+        this.removeLine = function (lineBean) { //断开某一条连接线 入参lineInst
             var list = [];
             var dir = {};
             for (var i = 0; i < this.lineList.length; i++) {
@@ -1052,7 +863,7 @@
             this.direction = dir;
             return this;
         };
-        this.disconnect = function () {
+        this.disconnect = function () { //断开该图形上的所有连接线
             for (var a = 0; a < this.lineList.length; a++) {
                 var line = this.lineList[a];
                 if (line.beginShape == this) {
@@ -1064,7 +875,7 @@
             }
             this.lineList = [];
         };
-        this.remove = function () {
+        this.remove = function () { //移除该图形
             this.disconnect();
             this.textShape.remove();
             this.textShape2.remove();
@@ -2309,7 +2120,7 @@
                 this.shape = this.raphael.text(this.x, this.y, this.main_realtext);
 
                 this.shape.attr({
-                    'fill' : this.color,
+                    'fill': this.color,
                     'font-size': this.main_textSize,
                     'cursor': 'default',
                     'font-family': this.main_textFamily,
@@ -2329,11 +2140,8 @@
                 /*********************/
                 this.shape.drag(shapeMove, shapeDragger, shapeUp); //shapeMove, shapeDragger, shapeUp
 
-                // this.shape.drag(textMove, textDragger, textUp);
-                // this.shape.click(textClick);
 
                 this.shape.dblclick(shapeDbclick);
-                //this.shape.click(shapeClick);
 
                 this.shape.mouseover(function () {
                     if (_this.overFun) {

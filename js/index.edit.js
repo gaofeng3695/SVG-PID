@@ -605,13 +605,12 @@ $(document).ready(function() {
                 that.editSvgObj.collection.createGeometrys(aShapeObjs,
                     function(aShapeList) {
                         aShapeList.forEach(function(shape) {
-                            that.bindShapeEvent(shape);
+                            that.editSvgObj.bindShapeEvent(shape);
                         });
                     });
                 that.editSvgObj.raphaelScreen.setState();
                 oCopy = null;
             });
-
         },
         alignShape: function(aShapeInst, sAlignSype) { // 对齐图形
             // 入参 aShapeInst
@@ -798,7 +797,7 @@ $(document).ready(function() {
             };
             this.saveToServer(data);
         },
-        isPublish: function() { //版本id,根据版本id去进行发布     
+        isPublish: function() { //版本id,根据版本id去进行发布
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
             var pidVersion = $("#selectStationPidVersion").val(); //版本id
