@@ -1,7 +1,7 @@
 //*******************************************************************************************************************************************
 /*
  ** 作者 ：Modified by GF on 2017.11.28
- ** 模块 ：ShapeConfig GeometryBean  ShapeBean PolyLineBean CurveLineBean LineBean  HistoryBean
+ ** 模块 ：ShapeConfig GeometryBean  ShapeBean PolyLineBean CurveLineBean TextBean  HistoryBean
  ** 依赖 ：无
  ** 入参 ：无
  */
@@ -17,7 +17,6 @@
         GEOMETRY_POLYGON: 'GEOMETRY_POLYGON', // 多边形
         GEOMETRY_POLYLINE: 'GEOMETRY_POLYLINE', // 多段线
         GEOMETRY_CURVELINE: 'GEOMETRY_CURVELINE', // 曲线
-        GEOMETRY_LINE: 'GEOMETRY_LINE', // 线
         GEOMETRY_TEXT: 'GEOMETRY_TEXT', // 字
 
         FACILITY_BAV: 'FACILITY_BAV',
@@ -142,16 +141,16 @@
         this.bgcolor = 'red'; //extend2的背景色
         this.hasExtent = true;
         this.hasExtent2 = true;
-        this.extent = null;
-        this.extent2 = null;
+        this.extent = null; //虚线框
+        this.extent2 = null; //背景框
         this.isextent2show = false;
-        this.selected = false;
+        this.selected = false; //控制虚线框的显隐
         this.color = '#000000';
-        this.warningColor = '#FF0000';
         this.fillColor = '#FFFFFF';
-        this.warningFillColor = '#FFFFFF';
         this.path = [];
         this.shape = null;
+
+
         this.text = '';
         this.realtext = '';
         this.realtext2 = '';
@@ -173,9 +172,11 @@
         this.textLeft2 = 0;
         this.textColor = '#000000';
         this.text2Color = '#000000';
+
         this.raphael = null;
         this.shapeCollection = null;
         this.raphaelScreen = null;
+
         this.createShape = function () {};
         this.moveTo = function () {};
         this.disconnect = function () {};
@@ -465,18 +466,6 @@
                 }
                 attr.lineList = list1;
             }
-            if (obj.shapeList) {
-                var list2 = [];
-                for (var b = 0; b < obj.shapeList.length; b++) {
-                    var shape = obj.shapeList[b];
-                    list2.push({
-                        shape: shape.shape.id,
-                        x: shape.shape.x,
-                        y: shape.shape.y,
-                    });
-                }
-                attr.shapeList = list2;
-            }
             if (obj.direction) {
                 attr.direction = obj.direction;
             }
@@ -615,14 +604,6 @@
         this.shapeType = ShapeConfig.SHAPE_RECT; // 矩形
 
         this.lineList = []; //存放连接线的实例
-        // this.freeLineList = [];
-        // this.freeDirection = {
-        //     x: 0,
-        //     y: 0,
-        //     differenceX: 0,
-        //     differenceY: 0
-        // };
-        //this.hasBackShape = false;
 
         this.border = 2;
         this.radius = 5;
@@ -630,21 +611,19 @@
         this.textAngle = 0;
         this.textAngle2 = 0;
 
-        //this.autoLine = false;
-
         this.opacity = 1;
         this.toTop = false;
         this.magnification = 1; //放大倍数
-        this.state = null,
+        this.state = null;
 
-            //setState、setShapeSrc、getState 三个函数只针对于图片
+        //setState、setShapeSrc、getState 三个函数只针对于图片
 
-            this.setState = function (state) { //设置状态，只针对于图片
-                if (this.shape) {
-                    this.setShapeSrc(state);
-                    this.state = state;
-                }
-            };
+        this.setState = function (state) { //设置状态，只针对于图片
+            if (this.shape) {
+                this.setShapeSrc(state);
+                this.state = state;
+            }
+        };
         this.setShapeSrc = function (state) { //改变图片的src
             if (this.shape) {
                 var arr = this.color.split('/');
@@ -968,138 +947,38 @@
 
     //*******************************************************************************************************************************************
 
-    // 折线线条对象
+    // 直线、折线线条对象
     PolyLineBean = function () {
         var _this = this;
         GeometryBean.call(this);
         this.geometryType = ShapeConfig.GEOMETRY_POLYLINE;
 
+        this.lineType = null; //线段的类型
+        var _lineTypeArray = ['StraightLine', 'BrokenLine']; //线段的所有类型，仅作为记录用
 
-        /********** 新增 ***********/
-        // this.width = 0;
-        // this.border = 5;
-        // this.pointSize = 4;
-        this.border = 0;
-        this.pointSize = 4;
-        /***************************/
-
-
-        this.bShape = null;
-        this.eShape = null;
-        this.beginShape = null;
-        this.endShape = null;
-        // this.c1Shape = null;
-        // this.c2Shape = null;
-        this.lineType = null;
-        this.middleShapeType = ShapeConfig.SHAPE_RECT;
-        this.middleWidth = 6;
-        this.middleHeight = 6;
-        this.middleColor = '#999999';
-        this.middleFillColor = '#999999';
-        this.warningMiddleColor = '#999999';
-        this.warningMiddleFillColor = '#999999';
-        this.middleFacilityType = ShapeConfig.FACILITY_PIPECABLECONNECTION;
-        this.backShape = null;
-        this.hasBackShape = false;
-        this.shapeList = [];
-        this.createConnectFun = null;
-        this.deleteConnectFun = null;
-        this.middleUp = null;
         this.dasharray = ['30,30'];
 
-        var lastSelectShape = null;
-        // this.setPath = function (id) { //设置线条的四个点
-        //     var cx1 = _this.c1x;
-        //     var cy1 = _this.c1y;
-        //     var cx2 = _this.c2x;
-        //     var cy2 = _this.c2y;
-        //     console.log(_this.c1x,_this.c1y,_this.c2x,_this.c2y)
+        this.border = 0; //线段border的大小
+        this.pointSize = 4; //线段头尾处圆点的大小
 
-        //     if (Math.abs(_this.ex - _this.bx) > Math.abs(_this.ey - _this.by)) {
-        //         if (id == 1) {
-        //             cx2 = cx1;
-        //         } else {
-        //             cx1 = cx2;
-        //         }
-        //         if (Math.abs(_this.by - _this.ey) <= 3 && id == 3) {
-        //             _this.ey = _this.by;
-        //         }
-        //         if (Math.abs(_this.by - _this.ey) <= 3 && id == 0) {
-        //             _this.by = _this.ey;
-        //         }
-        //         if (Math.abs(cx1 - _this.bx) <= 3) {
-        //             cx1 = cx2 = _this.bx;
-        //         }
-        //         if (Math.abs(cx1 - _this.ex) <= 3) {
-        //             cx1 = cx2 = _this.ex;
-        //         }
-        //         //cx1 = (_this.ex + _this.bx) / 2;
-        //         cy1 = _this.by;
-        //         //cx2 = (_this.ex + _this.bx) / 2;
-        //         cy2 = _this.ey;
-        //         _this.c1y = cy1;
-        //         _this.c2y = cy2;
-        //         _this.c1x = cx1;
-        //         _this.c2x = cx2;
-        //     } else {
-        //         if (id == 1) {
-        //             cy2 = cy1;
-        //         } else {
-        //             cy1 = cy2;
-        //         }
-        //         if (Math.abs(_this.bx - _this.ex) <= 3 && id == 3) {
-        //             _this.ex = _this.bx;
-        //         }
-        //         if (Math.abs(_this.bx - _this.ex) <= 3 && id == 0) {
-        //             _this.bx = _this.ex;
-        //         }
-        //         if (Math.abs(cy1 - _this.by) <= 3) {
-        //             cy1 = cy2 = _this.by;
-        //         }
-        //         if (Math.abs(cy1 - _this.ey) <= 3) {
-        //             cy1 = cy2 = _this.ey;
-        //         }
-        //         cx1 = _this.bx;
-        //         //cy1 = (_this.ey + _this.by) / 2;
-        //         cx2 = _this.ex;
-        //         //cy2 = (_this.ey + _this.by) / 2;
-        //         _this.c1y = cy1;
-        //         _this.c2y = cy2;
-        //         _this.c1x = cx1;
-        //         _this.c2x = cx2;
-        //     }
-        //     this.path[0] = {
-        //         x: this.bx,
-        //         y: this.by
-        //     };
-        //     this.path[1] = {
-        //         x: cx1,
-        //         y: cy1
-        //     };
-        //     this.path[2] = {
-        //         x: cx2,
-        //         y: cy2
-        //     };
-        //     this.path[3] = {
-        //         x: this.ex,
-        //         y: this.ey
-        //     };
-        // };
-        this.createShape = function () {
+        this.bShape = null; //线段头部圆点
+        this.eShape = null; //线段尾部圆点
+        this.beginShape = null; //线段头部所连接的图形
+        this.endShape = null; //线段尾部所连接的图形
+
+        this.createShape = function () { //创建线段
             if (this.raphael) {
                 this.setPath();
                 var path = this.getPath();
-                //console.log(path)
-                /*************** 修改  ****************/
+
                 this.shape = this.raphael.path(path).attr({
                     stroke: this.color,
                     fill: "none",
                     "stroke-width": this.border,
                     'stroke-dasharray': this.dasharray,
                 });
-
-                /************************************/
                 this.shape.toFront();
+
                 this.shape.mousedown(function (e) {
                     e.stopPropagation();
                 });
@@ -1107,13 +986,8 @@
                     e.stopPropagation();
                     shapeClick(_this);
                 });
+
                 this.shape.mouseover(function (e) {
-                    if (_this.hasBackShape && _this.canMove) {
-                        var offset = $('#holder').offset();
-                        var x = (e.pageX - offset.left);
-                        var y = (e.pageY - offset.top);
-                        _this.visitBashShape(true, x, y);
-                    }
                     if (_this.overFun) {
                         _this.overFun(_this);
                     }
@@ -1124,57 +998,20 @@
                     }
                 });
 
-
-
-
                 this._create_bShape();
-
                 this._create_eShape();
 
-
-                this.setCenter().setText().setExtent().unSelect().setBackShape().visitBashShape(false);
+                this.setCenter().setText().setExtent().unSelect();
                 this.setExtent2().hideExtent2();
                 if (this.shapeCollection) {
                     this.shapeCollection.addShape(this);
                 }
-                this.initMiddleShape();
             }
             return this;
         };
-        var canHideBackShape = true;
-        this.setBackShape = function () {
-            // if (this.hasBackShape && this.canMove) {
-            this.backShape = new ShapeBean();
-            this.backShape.shapeType = this.middleShapeType;
-            this.backShape.x = -1000;
-            this.backShape.y = -1000;
-            this.backShape.hasExtent = false;
-            this.backShape.raphael = this.raphael;
-            this.backShape.raphaelScreen = this.raphaelScreen;
-            this.backShape.width = this.middleWidth;
-            this.backShape.height = this.middleWidth;
-            this.backShape.canMove = false;
-            this.backShape.border = 1;
-            this.backShape.opacity = 0.2;
-            this.backShape.radius = 0;
-            this.backShape.color = this.middleColor;
-            this.backShape.fillColor = this.middleFillColor;
-            this.backShape.toTop = true;
-            this.backShape.overFun = function (e) {
-                canHideBackShape = false;
-            };
-            this.backShape.outFun = function (e) {
-                canHideBackShape = true;
-                _this.visitBashShape(false);
-            };
-            this.backShape.clickFun = function (shape) {
-                var shp = createMiddelShape(null, _this.backShape.x, _this.backShape.y);
-            };
-            this.backShape.createShape();
-            // }
-            return this;
-        };
-        this._create_bShape = function () {
+        var lastSelectShape = null; //最近一次连接的图形
+        this._create_bShape = function () { // 创建线段的头部圆圈
+
             this.bShape = new ShapeBean();
             this.bShape.shapeType = ShapeConfig.SHAPE_ELLIPSE;
             this.bShape.x = this.bx;
@@ -1188,17 +1025,15 @@
             this.bShape.border = 1;
             this.bShape.color = this.color;
             this.bShape.fillColor = this.fillColor;
-            this.bShape.warningColor = this.warningColor;
-            this.bShape.warningFillColor = this.warningFillColor;
             this.bShape.toTop = true;
             this.bShape.overFun = shapeOver;
             this.bShape.outFun = shapeOut;
             this.bShape.moveFun = function (shape) {
                 _this.bx = _this.bShape.x;
                 _this.by = _this.bShape.y;
-                _this.moveTo();
+                _this.moveTo(); //线段跟随头部移动
                 var shapeBean = null;
-                if (_this.shapeCollection) {
+                if (_this.shapeCollection) { //滑到了图形上
                     shapeBean = _this.shapeCollection.getShapeByLocat(_this.bx, _this.by, _this.facilityType);
                     if (shapeBean == _this.endShape) {
                         shapeBean = null;
@@ -1207,20 +1042,22 @@
                 if (lastSelectShape != shapeBean && lastSelectShape) {
                     lastSelectShape.unSelect().hideConnectPoints();
                 }
-                if (shapeBean) {
+                if (shapeBean) { // 如果滑到了图形上，设定该图形为选中，并展示该图形的连接点
                     shapeBean.select().showConnectPoints();
                     lastSelectShape = shapeBean;
                 }
-                if (_this.beginShape) {
+
+                if (_this.beginShape) { //如果存在连接的图形，断开连接
                     _this.beginShape.removeLine(_this);
                 }
                 _this.beginShape = null;
                 _this.resetShape();
+
                 if (_this.moveFun) {
                     _this.moveFun(this, -1);
                 }
             };
-            this.bShape.upFun = function (shape) {
+            this.bShape.upFun = function (shape) { //如果放在了图形上，则连接该图形
                 var shapeBean = null;
                 if (_this.shapeCollection) {
                     shapeBean = _this.shapeCollection.getShapeByLocat(_this.bx, _this.by, _this.facilityType);
@@ -1243,143 +1080,7 @@
             this.bShape.clickFun = shapeClick;
             this.bShape.createShape();
         };
-        this._create_c1Shape = function () {
-            this.c1Shape = new ShapeBean();
-            this.c1Shape.shapeType = ShapeConfig.SHAPE_ELLIPSE;
-            this.c1Shape.x = this.c1x;
-            this.c1Shape.y = this.c1y;
-            this.c1Shape.hasExtent = false;
-            this.c1Shape.raphael = this.raphael;
-            this.c1Shape.width = this.pointSize;
-            this.c1Shape.height = this.pointSize;
-            this.c1Shape.canMove = this.canMove;
-            this.c1Shape.border = 1;
-            this.c1Shape.color = this.color;
-            this.c1Shape.fillColor = this.fillColor;
-            this.c1Shape.warningColor = this.warningColor;
-            this.c1Shape.warningFillColor = this.warningFillColor;
-            this.c1Shape.toTop = true;
-            this.c1Shape.overFun = shapeOver;
-            this.c1Shape.outFun = shapeOut;
-            this.c1Shape.moveFun = function (shape) {
-                _this.c1x = _this.c1Shape.x;
-                _this.c1y = _this.c1Shape.y;
-                _this.moveTo(1);
-                var shapeBean = null;
-                if (_this.shapeCollection) {
-                    shapeBean = _this.shapeCollection.getShapeByLocat(_this.bx, _this.by, _this.facilityType);
-                    if (shapeBean == _this.endShape) {
-                        shapeBean = null;
-                    }
-                }
-                if (lastSelectShape != shapeBean && lastSelectShape) {
-                    lastSelectShape.unSelect();
-                }
-                if (shapeBean) {
-                    shapeBean.select();
-                    lastSelectShape = shapeBean;
-                }
-                if (_this.beginShape) {
-                    _this.beginShape.removeLine(_this);
-                }
-                _this.beginShape = null;
-                _this.resetShape();
-                if (_this.moveFun) {
-                    _this.moveFun(this, -1);
-                }
-            };
-            this.c1Shape.upFun = function (shape) {
-                var shapeBean = null;
-                if (_this.shapeCollection) {
-                    shapeBean = _this.shapeCollection.getShapeByLocat(_this.bx, _this.by, _this.facilityType);
-                    if (shapeBean == _this.endShape) {
-                        shapeBean = null;
-                    }
-                }
-                if (_this.beginShape) {
-                    _this.beginShape.removeLine(_this);
-                }
-                _this.beginShape = shapeBean;
-                if (shapeBean) {
-                    shapeBean.addLine(_this);
-                    shapeBean.unSelect();
-                }
-                if (_this.upFun) {
-                    _this.upFun(this, -1);
-                }
-            };
-            this.c1Shape.clickFun = shapeClick;
-            this.c1Shape.createShape();
-        };
-        this._create_c2Shape = function () {
-            this.c2Shape = new ShapeBean();
-            this.c2Shape.shapeType = ShapeConfig.SHAPE_ELLIPSE;
-            this.c2Shape.x = this.c2x;
-            this.c2Shape.y = this.c2y;
-            this.c2Shape.hasExtent = false;
-            this.c2Shape.raphael = this.raphael;
-            this.c2Shape.width = this.pointSize;
-            this.c2Shape.height = this.pointSize;
-            this.c2Shape.canMove = this.canMove;
-            this.c2Shape.border = 1;
-            this.c2Shape.color = this.color;
-            this.c2Shape.fillColor = this.fillColor;
-            this.c2Shape.warningColor = this.warningColor;
-            this.c2Shape.warningFillColor = this.warningFillColor;
-            this.c2Shape.toTop = true;
-            this.c2Shape.overFun = shapeOver;
-            this.c2Shape.outFun = shapeOut;
-            this.c2Shape.moveFun = function (shape) {
-                _this.c2x = _this.c2Shape.x;
-                _this.c2y = _this.c2Shape.y;
-                _this.moveTo(2);
-                var shapeBean = null;
-                if (_this.shapeCollection) {
-                    shapeBean = _this.shapeCollection.getShapeByLocat(_this.bx, _this.by, _this.facilityType);
-                    if (shapeBean == _this.endShape) {
-                        shapeBean = null;
-                    }
-                }
-                if (lastSelectShape != shapeBean && lastSelectShape) {
-                    lastSelectShape.unSelect();
-                }
-                if (shapeBean) {
-                    shapeBean.select();
-                    lastSelectShape = shapeBean;
-                }
-                if (_this.beginShape) {
-                    _this.beginShape.removeLine(_this);
-                }
-                _this.beginShape = null;
-                _this.resetShape();
-                if (_this.moveFun) {
-                    _this.moveFun(this, -1);
-                }
-            };
-            this.c2Shape.upFun = function (shape) {
-                var shapeBean = null;
-                if (_this.shapeCollection) {
-                    shapeBean = _this.shapeCollection.getShapeByLocat(_this.bx, _this.by, _this.facilityType);
-                    if (shapeBean == _this.endShape) {
-                        shapeBean = null;
-                    }
-                }
-                if (_this.beginShape) {
-                    _this.beginShape.removeLine(_this);
-                }
-                _this.beginShape = shapeBean;
-                if (shapeBean) {
-                    shapeBean.addLine(_this);
-                    shapeBean.unSelect();
-                }
-                if (_this.upFun) {
-                    _this.upFun(this, -1);
-                }
-            };
-            this.c2Shape.clickFun = shapeClick;
-            this.c2Shape.createShape();
-        };
-        this._create_eShape = function () {
+        this._create_eShape = function () { // 创建线段的尾部圆圈
             this.eShape = new ShapeBean();
             this.eShape.shapeType = ShapeConfig.SHAPE_ELLIPSE;
             this.eShape.x = this.ex;
@@ -1393,8 +1094,6 @@
             this.eShape.canMove = this.canMove;
             this.eShape.color = this.color;
             this.eShape.fillColor = this.fillColor;
-            this.eShape.warningColor = this.warningColor;
-            this.eShape.warningFillColor = this.warningFillColor;
             this.eShape.toTop = true;
             this.eShape.overFun = shapeOver;
             this.eShape.outFun = shapeOut;
@@ -1448,153 +1147,22 @@
             this.eShape.clickFun = shapeClick;
             this.eShape.createShape();
         };
-        var createMiddelShape = function (id, x, y) {
-            var shape = new ShapeBean();
-            shape.shapeType = _this.middleShapeType;
-            shape.x = x;
-            shape.y = y;
-            if (id) {
-                shape.id = id;
-            }
-            shape.hasExtent = true;
-            shape.facilityType = _this.middleFacilityType;
-            shape.raphael = _this.raphael;
-            shape.raphaelScreen = _this.raphaelScreen;
-            shape.width = _this.middleWidth;
-            shape.height = _this.middleWidth;
-            shape.shapeCollection = _this.shapeCollection;
-            shape.border = 1;
-            shape.opacity = 0.9;
-            shape.radius = 0;
-            shape.autoLine = true;
-            shape.path = _this.path;
-            shape.color = _this.middleColor;
-            shape.fillColor = _this.middleFillColor;
-            shape.canMove = _this.canMove;
-            shape.toTop = true;
-            shape.dbClickFun = function (shape) {
-                _this.removeMiddleShape(shape);
-                shape.remove();
-                if (_this.deleteConnectFun) {
-                    _this.deleteConnectFun(_this);
-                }
-            };
-            shape.moveFun = function (shape) {
-                _this.updateMiddleShape(shape);
-            };
-            shape.upFun = function (shape) {
-                if (_this.middleUp) {
-                    _this.middleUp(shape);
-                }
-            };
-            shape.createShape();
-            _this.updateMiddleShape(shape);
-            if (_this.createConnectFun) {
-                _this.createConnectFun(_this);
-            }
-            return shape;
-        };
-        this.initMiddleShape = function () {
-            if (this.shapeList && this.shapeList.length > 0) {
-                var list = [];
-                for (var a = 0; a < this.shapeList.length; a++) {
-                    var shape = this.shapeList[a];
-                    if (Tools.isString(shape.shape)) {
-                        list.push({
-                            shape: shape.shape,
-                            x: shape.x,
-                            y: shape.y,
-                        });
-                    }
-                }
-                this.shapeList = [];
-                for (var b = 0; b < list.length; b++) {
-                    createMiddelShape(list[b].shape, list[b].x, list[b].y);
-                }
-            }
-        };
-        this.updateMiddleShape = function (shape) {
-            var percent = this.getShapePercent(shape);
-            var add = true;
-            for (var a = 0; a < this.shapeList.length; a++) {
-                if (this.shapeList[a].shape.id == shape.id) {
-                    add = false;
-                    this.shapeList[a].percent = percent;
-                    break;
-                }
-            }
-            if (add) {
-                this.shapeList.push({
-                    shape: shape,
-                    percent: percent,
-                });
-            }
-            return this;
-        };
-        this.removeMiddleShape = function (shape) {
-            var list = [];
-            for (var a = 0; a < this.shapeList.length; a++) {
-                if (this.shapeList[a].shape.id != shape.id) {
-                    list.push(this.shapeList[a]);
-                }
-            }
-            this.shapeList = list;
-            return this;
-        };
-        this.getShapePercent = function (shape) {
-            var length = this.shape.getTotalLength();
-            var x = shape.x;
-            var y = shape.y;
-            var point = Tools.getNearlyPointToLine(this.path, x, y);
-            var l = 0;
-            var i = parseInt(point[2]);
-            for (var a = 0; a < i; a++) {
-                l += Math.sqrt((this.path[a].x - this.path[a + 1].x) * (this.path[a].x - this.path[a + 1].x) + (this.path[a].y - this.path[a + 1].y) * (this.path[a].y - this.path[a + 1].y));
-            }
-            l += Math.sqrt((this.path[i].x - x) * (this.path[i].x - x) + (this.path[i].y - y) * (this.path[i].y - y));
-            var percent = l / length;
-            return percent;
-        };
-        this.visitBashShape = function (visible, x, y) {
-            if (this.hasBackShape) {
-                // if (this.backShape) {
-                if (visible) {
-                    var point = Tools.getNearlyPointToLine(this.path, x, y);
-                    this.backShape.x = point[0];
-                    this.backShape.y = point[1];
-                    this.backShape.shape.show();
-                    this.backShape.moveTo();
-                } else {
-                    if (this.backShape) {
-                        this.backShape.shape.hide();
-                    }
-                }
-            }
-            return this;
-        };
-        this.moveTo = function (id) {
+        this.moveTo = function (id) { //重新设定线段的位置等属性
             this.setPath(id);
+
             this.shape.attr({
                 path: this.getPath()
             });
+
             this.bShape.x = this.bx;
             this.bShape.y = this.by;
             this.eShape.x = this.ex;
             this.eShape.y = this.ey;
-            /**
-             *  @ ls 20170912
-             *  @ 设置c1c2两点位置
-             */
-            // this.c1Shape.x = this.c1x;
-            // this.c1Shape.y = this.c1y;
-            // this.c2Shape.x = this.c2x;
-            // this.c2Shape.y = this.c2y;
+            this.bShape.color =  this.eShape.color = this.color;
+            this.bShape.fillColor =  this.eShape.fillColor = this.fillColor;
 
             this.bShape.moveTo();
             this.eShape.moveTo();
-
-            // this.c1Shape.moveTo();
-            // this.c2Shape.moveTo();
 
             this.setCenter();
 
@@ -1604,37 +1172,15 @@
 
             this.setExtent();
             this.setExtent2();
-            var length = this.shape.getTotalLength();
-            for (var a = 0; a < this.shapeList.length; a++) {
-                var percent = this.shapeList[a].percent;
-                var shape = this.shapeList[a].shape;
-                var point = this.shape.getPointAtLength(length * percent);
-                shape.x = point.x;
-                shape.y = point.y;
-                shape.moveTo();
-            }
+
             return this;
         };
-        this.setWarning = function (state) {
-            if (state) {
-                this.shape.attr({
-                    stroke: this.warningColor,
-                });
-            } else {
-                this.shape.attr({
-                    stroke: this.color,
-                });
-            }
-            this.bShape.setWarning(state);
-            this.eShape.setWarning(state);
-        };
-        this.setCenter = function () { //设定图形中心点的坐标
+        this.setCenter = function () { //设定线段中心点的坐标
             this.cx = (this.bx + this.ex) / 2;
             this.cy = (this.by + this.ey) / 2;
             return this;
         };
-
-        this.setPath = function () {
+        this.setPath = function () { //设定线段的路径点数组，分两类 直线和折线
             if (this.lineType !== "StraightLine") {
                 var cx1 = 0;
                 var cy1 = 0;
@@ -1683,12 +1229,25 @@
                 };
             }
         };
-        this.getPath = function () {
+        this.getPath = function () { //获取svg的path路径，根据路径点
             // // path(起点,右，下，左);  M 起点  L直线到(x,y)坐标
-            var path = ['M', this.path[0].x, this.path[0].y, 'L', this.path[1].x, this.path[1].y, 'L', this.path[2].x, this.path[2].y, 'L', this.path[3].x, this.path[3].y].join(',');
+            var path = [
+                'M',
+                this.path[0].x,
+                this.path[0].y,
+                'L',
+                this.path[1].x,
+                this.path[1].y,
+                'L',
+                this.path[2].x,
+                this.path[2].y,
+                'L',
+                this.path[3].x,
+                this.path[3].y
+            ].join(',');
             return path;
         };
-        this.disconnect = function () {
+        this.disconnect = function () { //断开所有连接的图形
             if (this.beginShape) {
                 this.beginShape.removeLine(this);
             }
@@ -1699,35 +1258,25 @@
             this.endShape = null;
             return this;
         };
-        this.remove = function () {
+        this.remove = function () { //删除该线段
             this.disconnect();
             this.shape.remove();
             this.bShape.remove();
-            /*
-                @ ls 20170908
-                @ 增加删除c1c2节点方法
-            */
-            // this.c1Shape.remove();
-            // this.c2Shape.remove();
-            /***********************/
             this.eShape.remove();
             this.textShape.remove();
             this.textShape2.remove();
-            if (this.backShape) {
-                this.backShape.remove();
-            }
-            for (var a = 0; a < this.shapeList.length; a++) {
-                this.shapeList[a].shape.remove();
-            }
             if (this.extent) {
                 this.extent.remove();
+            }
+            if (this.extent2) {
+                this.extent2.remove();
             }
             if (this.shapeCollection) {
                 this.shapeCollection.removeShape(this);
             }
             return this;
         };
-        this.resetShape = function () {
+        this.resetShape = function () { //调整图形与连接点的位置关系
             if (this.beginShape) {
                 this.beginShape.resetSingleLine(_this);
             }
@@ -1736,16 +1285,12 @@
             }
             return this;
         };
+
+        //以下三个为头尾部圆点的鼠标事件
         var shapeClick = function (shape) {
             _this.shape.toFront();
             _this.bShape.shape.toFront();
             _this.eShape.shape.toFront();
-            if (_this.backShape) {
-                _this.backShape.shape.toFront();
-            }
-            for (var a = 0; a < _this.shapeList.length; a++) {
-                _this.shapeList[a].shape.shape.toFront();
-            }
             _this.textShape.toFront();
             _this.textShape2.toFront();
             if (_this.clickFun) {
@@ -2075,30 +1620,6 @@
 
     //*******************************************************************************************************************************************
 
-    // 直线
-    LineBean = function () {
-        var _this = this;
-        PolyLineBean.call(this);
-        this.geometryType = ShapeConfig.GEOMETRY_LINE;
-        this.setPath = function () {
-            this.path[0] = {
-                x: this.bx,
-                y: this.by
-            };
-            this.path[1] = {
-                x: this.ex,
-                y: this.ey
-            };
-        };
-        this.getPath = function () {
-            var path = ['M', this.path[0].x, this.path[0].y, 'L', this.path[1].x, this.path[1].y].join(',');
-            return path;
-        };
-    };
-
-
-    //*******************************************************************************************************************************************
-
     // 文字
     TextBean = function () {
         var _this = this;
@@ -2170,7 +1691,6 @@
             if (this.angle != 0) {
                 this.shape.rotate(-this.angle);
             }
-
             this.shape.attr({
                 'text': this.main_realtext,
                 'font-size': this.main_textSize,
@@ -2191,14 +1711,9 @@
             this.setExtent2();
             return this;
         };
-
-
-
-
         var ox = 0;
         var oy = 0;
         var hasMove = false;
-
         var shapeDragger = function (x, y, e) { //开始移动的函数
             e.stopPropagation();
             hasMove = false;
@@ -2401,12 +1916,12 @@
     //*******************************************************************************************************************************************
 
     // 历史记录
-    HistoryBean = function () {
-        var _this = this;
-        this.type = '';
-        this.datetime = new Date();
-        this.actions = [];
-    };
+    // HistoryBean = function () {
+    //     var _this = this;
+    //     this.type = '';
+    //     this.datetime = new Date();
+    //     this.actions = [];
+    // };
 
 
 })();

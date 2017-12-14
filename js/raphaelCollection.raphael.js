@@ -126,7 +126,7 @@
         getGeometryByBitNumber: function (bitNumber) { // 根据位号返回shape
             var shape = null;
             for (var i = 0; i < this.shapeList.length; i++) {
-                if (bitNumber == this.shapeList[i].bitNumber) {
+                if ( this.shapeList[i].bitNumber && bitNumber == this.shapeList[i].bitNumber) {
                     shape = this.shapeList[i];
                     break;
                 }

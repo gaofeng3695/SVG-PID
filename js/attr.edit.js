@@ -187,19 +187,7 @@
                     }
                 }
                 //线条显示 长度*管径
-                if (that.selectShape.facilityType == 'LINE_BLACK_BOLD' ||
-                    that.selectShape.facilityType == 'LINE_IMAGINARYFOLDLINE' ||
-                    that.selectShape.facilityType == 'LINE_BLACK' ||
-                    that.selectShape.facilityType == 'LINE_RED' ||
-                    that.selectShape.facilityType == 'LINE_BLUE' ||
-                    that.selectShape.facilityType == 'LINE_CYAN' ||
-                    that.selectShape.facilityType == 'LINE_YELLOW' ||
-                    that.selectShape.facilityType == 'LINE_PINK_DASHED' ||
-                    that.selectShape.facilityType == 'LINE_ANODECABLE' ||
-                    that.selectShape.facilityType == 'LINE_CATHODECABLE' ||
-                    that.selectShape.facilityType == 'LINE_WIRE' ||
-                    that.selectShape.facilityType == 'LINE_ACTUALBROKENLINE' ||
-                    that.selectShape.facilityType == 'LINE_CONNECTIONLINE') {
+                if (that.selectShape.geometryType == ShapeConfig.GEOMETRY_POLYLINE || that.selectShape.geometryType == ShapeConfig.GEOMETRY_CURVELINE) {
 
                     //站内的管道不显示 长度和管径$("input[name='" + shapeAttrObj.name + "']").val()
                     if (!isNull($("input[name='diameter']").val()) && !isNull($("input[name='length']").val())) {
