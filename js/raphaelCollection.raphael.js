@@ -2,10 +2,10 @@
 /*
  ** 作者 ：Modified by GF on 2017.11.28
  ** 模块 ：ShapeCollection 图形之间的关系
- ** 依赖 ：ShapeConfig,ShapeBean,PolyLineBean,CurveLineBean,LineBean
+ ** 依赖 ：ShapeConfig,ShapeBean,PolyLineBean,CurveLineBean,
  ** 入参 ：raphaelScreen 实例
  */
-(function (ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean, LineBean) {
+(function (ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean ) {
     // 图形之间的关系
     ShapeCollection = function (raphaelScreen) { //r参RaphaelScreen实例
         this.raphaelScreen = raphaelScreen;
@@ -340,31 +340,63 @@
                 lineInst.endShape.addLine(lineInst);
             }
         },
-        createConnections: function (aGoes) { //批量创建连接关系
+        createConnections: function (aGeos,aShapeList,finishedfn) { //批量创建连接关系
             // 入参
             var that = this;
-            aGoes.forEach(function (item, index, attr) {
-                that.createLineConnection(item.id, item.beginShape, item.endShape);
-            })
+            var index = 0;
+            var time = new Date();
+
+            // var createConnection = function (aGeos, index) {
+            //     if (index >= aGeos.length) {
+            //         console.log('创建连接关系耗时：','____',(new Date() -time)/1000 + '秒')
+            //         finishedfn && finishedfn(aShapeList);
+            //         return;
+            //     }
+            //     setTimeout(function () {
+            //         var item = aGeos[index];
+            //         that.createLineConnection(item.id, item.beginShape, item.endShape);
+            //         createConnection(aGeos, ++index);
+            //     }, 0);
+
+            // };
+            // createConnection(aGeos,index);
+
+            aGeos.forEach(function (item, index, attr) {
+                setTimeout(function(){
+                    that.createLineConnection(item.id, item.beginShape, item.endShape);
+                    if(index >= aGeos.length - 1){
+                        console.log('____________  创建连接关系耗时：',(new Date() -time)/1000 + '秒');
+                        finishedfn && finishedfn(aShapeList);
+                        console.log('____________  绘图完成')
+                    }
+                },0);
+            });
+
         },
-        createGeometrys: function (aGeos, finishedfn) { //批量创建图形
+        createGeometrys: function (aGeos, finishedfn,isNotCreateConnect) { //批量创建图形
             var that = this;
             var index = 0;
             var aShapeList = [];
+
+            var time = new Date();
+            console.log('____________  绘图开始')
+
             var drawShape = function (aGeos, index) {
                 if (index >= aGeos.length) {
-                    that.createConnections(aGeos);
-                    //console.log('创建连接关系','____',new Date())
-                    finishedfn && finishedfn(aShapeList);
+                    console.log('____________  绘制耗时：',(new Date() -time)/1000 + '秒');
+                    if(isNotCreateConnect){ //如果不创建连接关系
+                        finishedfn && finishedfn(aShapeList);
+                        console.log('____________  绘图完成')
+                    }else{
+                        that.createConnections(aGeos,aShapeList,finishedfn);
+                    }
                     return;
                 }
                 setTimeout(function () {
-                    //console.log(index,'____',new Date())
 
                     var item = aGeos[index];
                     var shape = that.createGeometry(item);
                     aShapeList.push(shape);
-                    //that.bindShapeEvent(shape);
                     drawShape(aGeos, ++index);
                 }, 0);
             };
@@ -396,8 +428,6 @@
                 shape = new PolyLineBean();
             } else if (obj.geometryType == ShapeConfig.GEOMETRY_CURVELINE) {
                 shape = new CurveLineBean();
-            } else if (obj.geometryType == ShapeConfig.GEOMETRY_LINE) {
-                shape = new LineBean();
             } else if (obj.geometryType == ShapeConfig.GEOMETRY_TEXT) {
                 shape = new TextBean();
             }
@@ -507,7 +537,7 @@
         }
 
     };
-})(ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean, LineBean);
+})(ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean);
 
 
 //*******************************************************************************************************************************************

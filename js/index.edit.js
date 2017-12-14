@@ -8,20 +8,35 @@ $(document).ready(function() {
 /*
  * creeated by DX on 2017.12.12 针对业务相关对象
  */
-(function(window, baseMsg) {
+(function(window, baseMsg, baseConfirm) {
     window.stationPid = {
-        init: function() {
+            clickStation:false,//为true是点击保存的时候提示没有选中场站
+    		init: function() {
             this.initStation();
             this.bindEvent()
         },
         bindEvent: function() {
             var that = this;
             window.addEventListener("storage", function(value) {
+                var text = localStorage.getItem("lastStationText");
                 var str = localStorage.getItem("chosenStationNode");
-                if (str) {
-                    window.location.reload();
-                    //                    var obj = JSON.parse(str);
-                    //                    that.loadSelect(obj.stationOid);
+                if (str && JSON.parse(str).stationName&&!JSON.parse(str).stationAreaName) {
+                    if (!dragIocnObj.currentEdit &&!stationPid.clickStation&&JSON.parse(str).text != text) {
+                        window.location.reload();
+                    } else if (JSON.parse(str).text != text &&  !stationPid.clickStation) {
+                        baseConfirm("是否放弃", "当前绘制的还没有保存", function() {
+                            window.location.reload();
+                        }, function() {
+                            var li = $(window.parent.document).find(".node-tree2");
+                            for (var i = 0; i < li.length; i++) {
+                                if (li.eq(i).text() === text) {
+                                    $(li.eq(i)).trigger('click');
+                                    break;
+                                }
+                            }
+
+                        });
+                    }
                 }
             });
             $("#selectStationPidVersion").change(
@@ -36,6 +51,7 @@ $(document).ready(function() {
             if (str) {
                 var obj = JSON.parse(str);
                 if (obj.stationOid && obj.stationName) {
+                    localStorage.setItem("lastStationText", obj.text); //记录上一次取消时候的站名
                     this.loadSelect(obj.stationOid);
                 } else {
                     baseMsg("请选择具体的场站");
@@ -106,7 +122,7 @@ $(document).ready(function() {
             });
         }
     }
-}(window, baseMsg));
+}(window, baseMsg, baseConfirm));
 /*
  * * creeated by GF on 2017.12.04 * svg画布操作对象
  */
@@ -121,13 +137,23 @@ $(document).ready(function() {
 
         init: function() {
             this.initRaphael();
+
+            // $.ajax({
+            //     url: "data/" + 'cccc' + ".json",
+            //     method: "get",
+            //     async: true,
+            //     success: function (res) {
+            //             editSvgObj.renderChart(JSON.stringify(res));
+            //     }
+            // });
+
         },
         initRaphael: function() {
             var that = this;
             this.raphaelScreen = new RaphaelScreen({
                 'sId': 'holder',
-                'width': 5000,
-                'height': 5000,
+                'width': 10000,
+                'height': 10000,
                 'collection': this.collection,
                 'selectRectFn': this.selectShapeByRect.bind(this),
                 'dragingRectFn': this.moveShapes.bind(this)
@@ -215,7 +241,7 @@ $(document).ready(function() {
         renderChart: function(data) {
             var that = this;
             var aShapes = JSON.parse(data);
-            that.collection.setSvgSizeByShapes(aShapes, true); // 设定画布范围
+            that.collection.setSvgSizeByShapes(aShapes); // 设定画布范围
             that.collection.createGeometrys(aShapes, function(aShapeList) { // 渲染图形
                 console.log('加载完成')
                     // fn && fn(aShapeList);
@@ -230,6 +256,7 @@ $(document).ready(function() {
  */
 (function(window, $, ShapeConfig, Accordion, facilityConfig) {
     window.dragIocnObj = {
+        currentEdit: false,
         init: function(editSvgObj) {
             this.renderImgIcons();
             this.bindEvent();
@@ -329,6 +356,7 @@ $(document).ready(function() {
                             shape = that.collection.createText('A', x,
                                 y, '#000', oIcon.facilityType);
                         }
+                        that.currentEdit = true;
                         that.editSvgObj.bindShapeEvent(shape);
                     });
         },
@@ -759,8 +787,7 @@ $(document).ready(function() {
                 var day = (now.getDate()).toString();
                 if (month.length == 1) {
                     month = "0" + month;
-                }
-                if (day.length == 1) {
+                }   if (day.length == 1) {
                     day = "0" + day;
                 }
                 var dateTime = year + month + day;
@@ -775,6 +802,11 @@ $(document).ready(function() {
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
             var pidVersion = $("#selectStationPidVersion").val(); //版本id；如果有更新 没有是保存
+            if (!node.stationName) {
+                baseMsg("请选择具体场站");
+                stationPid.clickStation=true;
+                return;
+            }
             var data = {
                 "stationId": node.stationOid,
                 "stationName": node.stationName,
@@ -789,6 +821,11 @@ $(document).ready(function() {
         saveAs: function() { //另存为直接进行保存
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
+            if (!node.stationName) {
+                baseMsg("请选择具体场站");
+                stationPid.clickStation=true;
+                return;
+            }
             var data = {
                 "stationId": node.stationOid,
                 "stationName": node.stationName,
@@ -801,6 +838,11 @@ $(document).ready(function() {
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
             var pidVersion = $("#selectStationPidVersion").val(); //版本id
+            if (!node.stationName) {
+                baseMsg("请选择具体场站");
+                stationPid.clickStation=true;
+                return;
+            }
             var data = {
                 "stationId": node.stationOid,
                 "stationName": node.stationName,
@@ -822,8 +864,10 @@ $(document).ready(function() {
                     if (res.code == "success") {
                         if (data.isPublish == "1") {
                             baseMsg("发布成功");
+                            dragIocnObj.currentEdit=false;
                         } else {
                             baseMsg("保存成功");
+                            dragIocnObj.currentEdit=false;
                             stationPid.initStation();
                         }
 

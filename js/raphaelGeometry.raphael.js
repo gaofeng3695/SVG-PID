@@ -136,6 +136,7 @@
         this.isTwinkle = false; //是否闪烁，指的是extend2的闪烁
         this.direction = {};
         this.customJoinPoint = []; //自定义连接点
+
         this.extentBorder = 5;
         this.extent2Border = 2;
         this.bgcolor = 'red'; //extend2的背景色
@@ -145,6 +146,8 @@
         this.extent2 = null; //背景框
         this.isextent2show = false;
         this.selected = false; //控制虚线框的显隐
+
+
         this.color = '#000000';
         this.fillColor = '#FFFFFF';
         this.path = [];
@@ -187,8 +190,6 @@
 
         // 文字旋转
         this.textRaphael = null;
-        this.textRotateAble = false;
-        this.textExtentShow = false;
 
         this.moveFun = null;
         this.upFun = null;
@@ -252,11 +253,6 @@
                     });
                 }
                 if (this.textShape2) {
-                    /**
-                     *  @ ls 20170918
-                     *  @ text2方法
-                     */
-
                     if (this.textAngle2 != 0 && this.textAngle2 != undefined && this.textShape != null) {
                         this.textShape2.rotate(-this.textAngle2);
                     }
@@ -275,10 +271,6 @@
                         this.textShape2.rotate(this.textAngle2);
                     }
                 } else {
-                    /**
-                     *  @ ls 20170918
-                     *  @ text2方法
-                     */
                     this.textShape2 = this.raphael.text(this.cx + this.textLeft2, this.cy + 20 - this.textTop2, this.realtext2).attr({
                         fill: this.text2Color,
                         'font-size': this.text2Size,
@@ -1383,10 +1375,10 @@
                         }
                     }
                     if (lastSelectShape != shapeBean && lastSelectShape) {
-                        lastSelectShape.unSelect();
+                        lastSelectShape.unSelect().hideConnectPoints();
                     }
                     if (shapeBean) {
-                        shapeBean.select();
+                        shapeBean.select().showConnectPoints();
                         lastSelectShape = shapeBean;
                     }
                     if (_this.moveFun) {
@@ -1407,7 +1399,7 @@
                     _this.beginShape = shapeBean;
                     if (shapeBean) {
                         shapeBean.addLine(_this);
-                        shapeBean.unSelect();
+                        shapeBean.unSelect().hideConnectPoints();
                     }
                     if (_this.upFun) {
                         _this.upFun(this, -1);
@@ -1481,10 +1473,10 @@
                         }
                     }
                     if (lastSelectShape != shapeBean && lastSelectShape) {
-                        lastSelectShape.unSelect();
+                        lastSelectShape.unSelect().hideConnectPoints();
                     }
                     if (shapeBean) {
-                        shapeBean.select();
+                        shapeBean.select().showConnectPoints();
                         lastSelectShape = shapeBean;
                     }
                     if (_this.moveFun) {
@@ -1505,7 +1497,7 @@
                     _this.endShape = shapeBean;
                     if (shapeBean) {
                         shapeBean.addLine(_this);
-                        shapeBean.unSelect();
+                        shapeBean.unSelect().hideConnectPoints();
                     }
                     if (_this.upFun) {
                         _this.upFun(this, -1);
@@ -1533,6 +1525,9 @@
             this.mShape.y = this.cy;
             this.eShape.x = this.ex;
             this.eShape.y = this.ey;
+            this.bShape.color =  this.eShape.color = this.mShape.color = this.color;
+            this.bShape.fillColor =  this.eShape.fillColor = this.mShape.fillColor = this.fillColor;
+
             this.bShape.moveTo();
             this.mShape.moveTo();
             this.eShape.moveTo();
@@ -1540,20 +1535,6 @@
             this.setExtent();
             this.setExtent2();
             return this;
-        };
-        this.setWarning = function (state) {
-            if (state) {
-                this.shape.attr({
-                    stroke: this.warningColor,
-                });
-            } else {
-                this.shape.attr({
-                    stroke: this.color,
-                });
-            }
-            this.bShape.setWarning(state);
-            this.mShape.setWarning(state);
-            this.eShape.setWarning(state);
         };
         this.setPath = function () {
             this.path[0] = {
@@ -1583,6 +1564,9 @@
             this.textShape2.remove();
             if (this.extent) {
                 this.extent.remove();
+            }
+            if (this.extent2) {
+                this.extent2.remove();
             }
             if (this.shapeCollection) {
                 this.shapeCollection.removeShape(this);
@@ -1686,7 +1670,6 @@
             }
             return this;
         };
-
         this.moveTo = function () { //移动图形，重新设定其宽和高
             if (this.angle != 0) {
                 this.shape.rotate(-this.angle);
@@ -1762,14 +1745,12 @@
                 _this.clickFun(_this);
             }
         };
-
         var shapeDbclick = function (e) {
             if (e.button === 2) return;
             if (hasMove == false && _this.dbClickFun) {
                 _this.dbClickFun(_this);
             }
         };
-
     };
 
     //*******************************************************************************************************************************************

@@ -46,19 +46,19 @@ $(document).ready(function () {
             this.bindEvent();
 
             // $.ajax({
-            //     url: "data/" + 'bbbb' + ".json",
+            //     url: "data/" + 'cccc' + ".json",
             //     method: "get",
             //     async: true,
             //     success: function (res) {
-            //         var res = res.slice(100, 300);
+            //         //var res = res.slice(100, 300);
+
             //         that.collection.setSvgSizeByShapes(res, true); //设定画布范围
             //         that.collection.createGeometrys(res, function (aShapeList) { //渲染图形
             //             aShapeList.forEach(function (shape) {
             //                 that.bindGeometryEvent(shape); //绑定图形事件
             //             });
             //             that.isLoaded = true;
-            //             console.log('加载完成')
-            //         });
+            //         },true);
             //     }
             // });
 
@@ -110,7 +110,6 @@ $(document).ready(function () {
         },
         requestData: function (query, fn) {
             var that = this;
-            /************************************ */
             $.ajax({
                 url: rootPath + "StationPidChart/getDetail.do",
                 type: "POST",
@@ -132,9 +131,8 @@ $(document).ready(function () {
                                     that.bindGeometryEvent(shape); //绑定图形事件
                                 });
                                 that.isLoaded = true;
-                                console.log('加载完成')
                                 fn && fn(aShapeList);
-                            });
+                            },true);
                         }
                     }
                 }
@@ -241,7 +239,7 @@ $(document).ready(function () {
                // console.log('准备弹出图层')
                 clearTimeout(mouseover_timeout);
                 mouseover_timeout = setTimeout(function () {
-                    console.log('弹出了图层')
+                    //console.log('弹出了图层')
                     that.showbubble(shape, e);
                 }, 300);
 
@@ -270,8 +268,8 @@ $(document).ready(function () {
                 this.bubblePanel = bubble;
             }
             var sHtml = [
-                '位号：' + shape.bitNumber,
-                '设施类型：' + shape.facilityType
+                '名称：' + (shape.realtext || ''),
+                '位号：' + (shape.bitNumber || '')
 
             ].join('<br/>');
 
@@ -287,8 +285,67 @@ $(document).ready(function () {
                 this.bubblePanel.hide();
             }
         },
-        showModal: function (a) {
-            //console.log('双击了'+a.bitNumber+'的元件');
+        showModal: function(a) {
+            console.log(a);
+            if (a.facilityType == "FACILITY_CREATETEXT") {
+                var technologyUrl = rootPath + 'technologyActionRecord/getDetail.do?';
+                var stationId = localStorage.getItem("stationOid");
+                var groupName = a.main_realtext;
+                var data = {
+                    stationId: stationId,
+                    groupName: groupName
+                };
+                $.ajax({
+                    url: technologyUrl,
+                    method: "post",
+                    async: false,
+                    contentType: 'application/json;charset=utf-8',
+                    data: JSON.stringify(data),
+                    dataType: 'json',
+                    success: function(res) {
+                        if(res.data!=null){
+                            var objectId=res.data.oid;
+                            var url = rootPath + 'system/station/stationinfo/station_group_view.html?oid=' + objectId;
+                            baseShow(objectId + "_view", "分组详情", url, 800, 450);
+                        }else{
+                            baseMsg("当前工艺无数据");
+                        }
+                    },
+                    error: function() {
+                        console.log('请求失败');
+                    }
+                });
+            } else if (a.bitNumber != null) {
+                var switchUrl = rootPath + 'processChange/getDetail.do?';
+                var bitNumber = a.bitNumber;
+                var stationId = localStorage.getItem("stationOid");
+                var data = {
+                    stationId: stationId,
+                    deviceLocationNo: bitNumber
+                };
+                $.ajax({
+                    url: switchUrl,
+                    method: "post",
+                    async: false,
+                    contentType: 'application/json;charset=utf-8',
+                    data: JSON.stringify(data),
+                    dataType: 'json',
+                    success: function(res) {
+                        console.log(res);
+                        if(res.data!=null){
+                            var objectId = res.data.oid;
+                            console.log(objectId);
+                            var url = rootPath + 'system/device/devicecard/device_card_view.html?oid=' + objectId;
+                            baseShow(objectId + "_view", '设备信息详情', url, 1000, 650);
+                        }else{
+                            baseMsg("当前设备无数据");
+                        }
+                    },
+                    error: function() {
+                        console.log('请求失败');
+                    }
+                });
+            }
         },
         chooseGeometry: function (shape) { //点击选择元件
 
@@ -655,13 +712,40 @@ $(document).ready(function () {
                 baseMsg("当前无PID图");
             }
         },
-        createWorkList: function () {
-            var url = 'system/workflow/workflow_done_add.html';
-            baseDialog(uuid(8), "新增工单信息", url, 900, 500, ['发起', '取消'], ['saveData()']);
-        },
-        changeSwitcher: function () { /*阀门开关模态框*/
+        createWorkList: function () {//发起工单
             var numLength = drawSvgObj.selectedShapeList.length;
-            //            console.log(drawSvgObj.selectedShapeList);
+            if (drawSvgObj.isHasData) {
+                if (drawSvgObj.isLoaded) {
+                    if (numLength != 0) {
+                        var type=drawSvgObj.selectedShapeList[0].facilityType;
+                        if(type=="FACILITY_CREATETEXT"){
+                            baseMsg("请选择元件");
+                        }else{
+                            var arr=drawSvgObj.selectedShapeList;
+                            var Oid = localStorage.getItem("stationOid");
+                            var arrString=[];
+                            for(var i=0;i<arr.length;i++){
+                                if(arr[i].bitNumber){
+                                    arrString.push(arr[i].bitNumber);
+                                }
+                            }
+                            var string=arrString.join();//将位号转化为字符串
+                            var url = 'system/workflow/workflow_done_add.html?stationId=' + Oid + "&deviceLocationNos=" + string;
+                            baseDialog(uuid(8), "新增工单信息", url, 900, 500, ['发起', '取消'], ['saveData()']);
+                        }
+
+                    }else {
+                        baseMsg("请选择元件");
+                    }
+                } else {
+                    baseMsg("加载中，请稍后操作。。。");
+                }
+            } else {
+                baseMsg("当前无PID图");
+            }
+        },
+        changeSwitcher: function () { //阀门开关
+            var numLength = drawSvgObj.selectedShapeList.length;
             if (drawSvgObj.isHasData) {
                 if (drawSvgObj.isLoaded) {
                     if (numLength == 0) {
@@ -669,11 +753,14 @@ $(document).ready(function () {
                     } else if (numLength != 1) {
                         baseMsg("只能选择一个元件");
                     } else {
+                    	var type=drawSvgObj.selectedShapeList[0].facilityType;
                         var bitNumber = drawSvgObj.selectedShapeList[0].bitNumber;
                         var Oid = localStorage.getItem("stationOid")
                         var url = 'system/device/processchange/process_change_add_edit.html?stationId=' + Oid + "&bitNumber=" + bitNumber;
                         if (bitNumber != null && bitNumber != '' && bitNumber != 'undefined') {
                             baseDialog(uuid(8), "阀门开关", url, 900, 500, ['发起', '取消'], ['saveData()']);
+                        }else if(type=="FACILITY_CREATETEXT"){
+                        	baseMsg("请选择元件");
                         } else {
                             baseMsg("该元件没有位号");
                         }
@@ -685,14 +772,30 @@ $(document).ready(function () {
                 baseMsg("当前无PID图");
             }
         },
-        changeTechnic: function () {
-            var bitNumber = drawSvgObj.selectedShapeList[0].bitNumber;
-            var Oid = localStorage.getItem("stationOid");
-            var k = "高次高压撬过滤计量区过滤计量一路";
-            //var url = 'system/technology/technology_record_edit.html?stationId=' + Oid + "&bitNumber=" + bitNumber + "&groupName=" + k;
-            var url = 'system/technology/technology_record_edit.html?stationId=' + Oid + "&groupName=" + encodeURI(k);
-            baseDialog(uuid(8), "工艺转换", url, 900, 500, ['发起', '取消'], ['saveData()']);
+        changeTechnic: function () {//工艺转换
+        	var numLength = drawSvgObj.selectedShapeList.length;
+            if (drawSvgObj.isHasData) {
+            	if (drawSvgObj.isLoaded) {
+            		if (numLength != 0) {
+	                    var type=drawSvgObj.selectedShapeList[0].facilityType;
+	            		if(type=="FACILITY_CREATETEXT"){
+	            			var bitNumber = drawSvgObj.selectedShapeList[0].bitNumber;
+	            		    var Oid = localStorage.getItem("stationOid");
+	            		    var groupName = drawSvgObj.selectedShapeList[0].main_realtext;
+	            		    var url = 'system/technology/technology_record_edit.html?stationId=' + Oid + "&groupName=" + encodeURI(groupName);
+	            		    baseDialog(uuid(8), "工艺转换", url, 900, 500, ['发起', '取消'], ['saveData()']);
+	            		}else{
+	            			baseMsg("请选择工艺系统");
+	            		}
+            		}else{
+            			baseMsg("请选择工艺系统");
+            		}
+                } else {
+                    baseMsg("加载中，请稍后操作。。。");
+                }
+            } else {
+                baseMsg("当前无PID图");
+            }
         },
-
     }
 })(window, $, drawSvgObj);
