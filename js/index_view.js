@@ -50,7 +50,9 @@ $(document).ready(function () {
             //     method: "get",
             //     async: true,
             //     success: function (res) {
-            //         //var res = res.slice(100, 300);
+            //         var res = res.filter(function(item){
+            //             return item.main_realtext;
+            //         });
 
             //         that.collection.setSvgSizeByShapes(res, true); //设定画布范围
             //         that.collection.createGeometrys(res, function (aShapeList) { //渲染图形
@@ -138,7 +140,7 @@ $(document).ready(function () {
                 }
             });
         },
-        changeState: function (shape) {
+        changeState: function () { // 设置阀门和线路的状态
             var that = this;
             var url = rootPath + 'stationBaseStatus/getGateAndGroup.do?stationOid=' + localStorage.getItem("stationOid");
             var ValveClosing = []; //所有关闭状态下的位号
@@ -177,30 +179,19 @@ $(document).ready(function () {
                     console.log('请求失败');
                 }
             });
-            console.log(roadStatusMain);
-            console.log(roadStatusSide);
-            console.log(roadStatusUse);
-            console.log(roadStatusDisable);
-            console.log(roadStatusNull);
-            console.log(ValveClosing);
-            this.collection.setShapeStateByBitNumberList('002', ValveClosing);
-            //that.setRoadColor("调压一路");
+            console.log('roadStatusMain：',roadStatusMain);
+            console.log('roadStatusSide：',roadStatusSide);
+            console.log('roadStatusUse：',roadStatusUse);
+            console.log('roadStatusDisable：',roadStatusDisable);
+            console.log('roadStatusNull：',roadStatusNull);
+            console.log('ValveClosing：',ValveClosing);
 
-            roadStatusMain.forEach(function (item) {
-                that.setRoadColor(item, 'green'); //主路状态对应颜色
-            });
-            roadStatusSide.forEach(function (item) {
-                that.setRoadColor(item, 'blue'); //辅路状态对应颜色
-            });
-            roadStatusUse.forEach(function (item) {
-                that.setRoadColor(item, 'green'); //在用状态对应颜色
-            });
-            roadStatusDisable.forEach(function (item) {
-                that.setRoadColor(item, 'black'); //停用状态对应颜色
-            });
-            //            roadStatusNull.forEach(function (item) {
-            //                that.setRoadColor(item,'black');//空状态对应颜色
-            //            });
+            this.collection.setShapeStateByBitNumberList('002', ValveClosing);
+
+            this.collection.setRoadsColor(roadStatusMain, 'green','主路');
+            this.collection.setRoadsColor(roadStatusSide, 'blue','辅路');
+            this.collection.setRoadsColor(roadStatusUse, 'green','在用');
+            this.collection.setRoadsColor(roadStatusDisable, '#333','停用');
 
         },
         bindGeometryEvent: function (shape) {
@@ -411,31 +402,6 @@ $(document).ready(function () {
         },
         locateAreaByPointsList: function (aPonits) { // [{x,y}]
             this.collection.locateArea(aPonits);
-        },
-        setRoadColor: function (sRoad, color) {
-            console.log(sRoad)
-            color = color || 'blue';
-            var shape = this.collection.getGeometryByMainRealtext(sRoad);
-            if (shape) {
-                //shape.showExtent2();
-                var box = shape.shape.getBBox();
-
-                var centerY = box.y + box.height / 2;
-                var height = box.height * 0.8; //                console.log(x, y, width, height)
-                var width = 100;
-
-                var x = box.x2 + 10;
-                var y = centerY - height / 2 - 2;
-
-                var rect = this.raphael.rect(x, y, width, height);
-                rect.attr({
-                    stroke: color,
-                    fill: color,
-                    opacity: 0.8,
-                    r: 2
-                });
-
-            }
         },
         openCreateMarkerMode: function (url, width, height) {
             this.isCreateMarkerMode = true;

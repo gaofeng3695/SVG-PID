@@ -322,6 +322,54 @@
                 aShapeObjs: JSON.parse(s)
             };
         },
+        setRoadColor: function (sRoad, color,sTip) { //设定线路的状态，入参线路名称，颜色，线路状态
+            color = color || 'blue';
+            var shape = this.getGeometryByMainRealtext(sRoad);
+
+            if (shape) {
+                var box = shape.shape.getBBox();
+
+                var centerY = box.y + box.height / 2;
+                var height = box.height * 0.8; //                console.log(x, y, width, height)
+                var width = 100;
+
+                var x = box.x2 + 10;
+                var y = centerY - height / 2 - 2;
+                if(!this._roadStateMap){
+                    this._roadStateMap = {};
+                }
+                if(!this._roadStateMap[sRoad]){
+                    this._roadStateMap[sRoad] = {};
+                }
+                if(this._roadStateMap[sRoad].rect){
+                    this._roadStateMap[sRoad].rect.remove();
+                }
+                this._roadStateMap[sRoad].rect = this.raphael.rect(x, y, width, height);
+                this._roadStateMap[sRoad].rect.attr({
+                    stroke: color,
+                    fill: color,
+                    opacity: 0.8,
+                    r: 2
+                });
+                if(sTip) {
+                    if(this._roadStateMap[sRoad].text){
+                        this._roadStateMap[sRoad].text.remove();
+                    }
+                    this._roadStateMap[sRoad].text = this.raphael.text(x+width/2, y+height/2, sTip).attr({
+                        'fill':'#fff',
+                        'font-size': 18,
+                        'font-family': '微软雅黑',
+                    });
+                }
+
+            }
+        },
+        setRoadsColor : function(aRoads,color,sTip){ //批量设定线路状态
+            var that = this;
+            aRoads.forEach(function(sRoad){
+                that.setRoadColor(sRoad, color,sTip)
+            });
+        },
         createLineConnection: function (sLineId, beginShapeId, endShapeId) { //创建连接关系
             //入参 ： 连接线的Id值
             var lineInst = this.getGeometryById(sLineId);

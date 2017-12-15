@@ -380,7 +380,7 @@ $(document).ready(function() {
                 ],
                 icon_line: ['LINE_BLACK_BOLD', 'LINE_CONNECTIONLINE',
                     'LINE_ACTUALBROKENLINE', 'LINE_IMAGINARYFOLDLINE',
-                    'LINE_WIRE', 'FACILITY_SOLIDPOINT', 'FACILITY_FONTS'
+                    'LINE_WIRE', 'FACILITY_SOLIDPOINT', 'FACILITY_CREATETEXT'
                 ],
                 icon_other: ['FACILITY_CYAN_MARK', 'FACILITY_RED_MARK',
                     'FACILITY_MARK', 'FACILITY_TRIANGLE_MARK',
@@ -390,9 +390,7 @@ $(document).ready(function() {
                     'FACILITY_ARROW63', 'FACILITY_ARROW64',
                     'FACILITY_ARROW65', 'FACILITY_ARROW66',
                     'FACILITY_ARROW67', 'FACILITY_ARROW68',
-                    'FACILITY_ARROW69', 'FACILITY_ARROW70',
-                    'FACILITY_ARROW75'
-                ]
+                    'FACILITY_ARROW69', 'FACILITY_ARROW70'                ]
 
             };
             var createEachIconHtml = function(facilityType) {
