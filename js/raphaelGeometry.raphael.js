@@ -1290,9 +1290,11 @@
             }
         };
         var shapeOver = function (shape) {
-            shape.width = shape.width * 2;
-            shape.height = shape.height * 2;
-            shape.moveTo();
+            if(shape.canMove){
+                shape.width = shape.width * 2;
+                shape.height = shape.height * 2;
+                shape.moveTo();
+            }
             if (_this.overFun) {
                 _this.overFun(shape);
             }
@@ -1584,10 +1586,12 @@
                 _this.clickFun(_this);
             }
         };
-        var shapeOver = function (shape) {
-            shape.width = shape.width * 2;
-            shape.height = shape.height * 2;
-            shape.moveTo();
+        var shapeOver = function (shape) {            console.log(shape)
+            if(_this.canMove){
+                shape.width = shape.width * 2;
+                shape.height = shape.height * 2;
+                shape.moveTo();
+            }
             if (_this.overFun) {
                 _this.overFun(shape);
             }

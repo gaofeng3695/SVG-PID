@@ -50,9 +50,9 @@ $(document).ready(function () {
             //     method: "get",
             //     async: true,
             //     success: function (res) {
-            //         var res = res.filter(function(item){
-            //             return item.main_realtext;
-            //         });
+            //         // var res = res.filter(function(item){
+            //         //     return item.main_realtext;
+            //         // });
 
             //         that.collection.setSvgSizeByShapes(res, true); //设定画布范围
             //         that.collection.createGeometrys(res, function (aShapeList) { //渲染图形
@@ -259,7 +259,7 @@ $(document).ready(function () {
                 this.bubblePanel = bubble;
             }
             var sHtml = [
-                '名称：' + (shape.realtext || ''),
+                '名称：' + (shape.facilityName || ''),
                 '位号：' + (shape.bitNumber || '')
 
             ].join('<br/>');
@@ -296,8 +296,8 @@ $(document).ready(function () {
                     success: function(res) {
                         if(res.data!=null){
                             var objectId=res.data.oid;
-                            var url = rootPath + 'system/station/stationinfo/station_group_view.html?oid=' + objectId;
-                            baseShow(objectId + "_view", "分组详情", url, 800, 450);
+                            var url = rootPath + 'system/technology/technology_record_view.html?code=' + objectId;
+                            baseShow(objectId + "_view", "工艺基本信息详情", url, 900, 600);
                         }else{
                             baseMsg("当前工艺无数据");
                         }
@@ -664,12 +664,10 @@ $(document).ready(function () {
                     if (this.isWarning) {
                         drawSvgObj.collection.clearTwinkle();
                         this.isWarning = false;
-                        //                    this.alarmBtn.css("background", "#ebebeb");
                     } else {
                         drawSvgObj.collection.locateShapes(arr);
                         drawSvgObj.collection.setTwinkleByBitNumberList(arr, 'yellow');
                         this.isWarning = true;
-                        //                    this.alarmBtn.css("background", "red");
                     }
                 } else {
                     baseMsg("加载中，请稍后操作。。。");

@@ -5,7 +5,7 @@
  ** 依赖 ：ShapeConfig,ShapeBean,PolyLineBean,CurveLineBean,
  ** 入参 ：raphaelScreen 实例
  */
-(function (ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean) {
+(function (ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean,facilityConfig) {
     // 图形之间的关系
     ShapeCollection = function (raphaelScreen) { //r参RaphaelScreen实例
         this.raphaelScreen = raphaelScreen;
@@ -467,7 +467,6 @@
                     return num;
                 });;
 
-
                 var _x = Math.min.apply(null,xArr) - 100;
                 var _y = Math.min.apply(null,yArr) - 100;
                 var x = Math.max.apply(null,xArr) + 100;
@@ -517,17 +516,19 @@
             if (obj.geometryType == ShapeConfig.GEOMETRY_POLYGON) {
                 shape.lineList = [];
             }
+            shape.facilityName = facilityConfig[shape.facilityType] ? facilityConfig[shape.facilityType].name : '';
             shape.raphael = this.raphael;
             shape.shapeCollection = this;
             shape.raphaelScreen = this.raphaelScreen;
             shape.createShape();
             return shape;
         },
-        createShape: function (url, x, y, w, h, ft, shapeType) {
+        createShape: function (url, x, y, w, h, ft, shapeType,name) {
             if (shapeType === ShapeConfig.SHAPE_ELLIPSE) {
                 url = '#000';
             }
             return this.createGeometry({
+                facilityName : name || '',
                 geometryType: ShapeConfig.GEOMETRY_POLYGON,
                 shapeType: shapeType || ShapeConfig.SHAPE_IMAGE,
                 facilityType: ft,
@@ -540,9 +541,10 @@
                 height: h,
             });
         },
-        createLine: function (lineType, dasharray, x, y, ft, warningColor, color, border, pointSize) { //创建直线或者折线
+        createLine: function (lineType, dasharray, x, y, ft, warningColor, color, border, pointSize,name) { //创建直线或者折线
             // StraightLine  BrokenLine
             return this.createGeometry({
+                facilityName : name || '',
                 geometryType: ShapeConfig.GEOMETRY_POLYLINE,
                 facilityType: ft,
                 warningColor: warningColor,
@@ -559,8 +561,9 @@
                 dasharray: dasharray || null,
             });
         },
-        createText: function (text, x, y, color, ft) {
+        createText: function (text, x, y, color, ft,name) {
             return this.createGeometry({
+                facilityName : name || '',
                 geometryType: ShapeConfig.GEOMETRY_TEXT,
                 facilityType: ft,
                 color: color,
@@ -574,7 +577,7 @@
 
             });
         },
-        createWireLine: function (x, y, ft) {
+        createWireLine: function (x, y, ft,name) {
             var shapeType = ShapeConfig.SHAPE_ELLIPSE;
             var url = '';
             var size = 3;
@@ -592,6 +595,7 @@
                 size = 3;
             }
             return this.createGeometry({
+                facilityName : name || '',
                 geometryType: ShapeConfig.GEOMETRY_CURVELINE,
                 color: '#000000',
                 fillColor: '#FFFFFF',
@@ -617,7 +621,7 @@
         }
 
     };
-})(ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean);
+})(ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean,facilityConfig);
 
 
 //*******************************************************************************************************************************************

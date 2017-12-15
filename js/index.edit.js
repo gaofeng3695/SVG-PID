@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     editSvgObj.init();
     dragIocnObj.init(editSvgObj);
     topToolsObj.init(editSvgObj);
@@ -8,27 +8,27 @@ $(document).ready(function() {
 /*
  * creeated by DX on 2017.12.12 针对业务相关对象
  */
-(function(window, baseMsg, baseConfirm) {
+(function (window, baseMsg, baseConfirm) {
     window.stationPid = {
-            clickStation:false,//为true是点击保存的时候提示没有选中场站
-    		init: function() {
+        clickStation: false, //为true是点击保存的时候提示没有选中场站
+        init: function () {
             this.initStation();
             this.bindEvent()
         },
-        bindEvent: function() {
+        bindEvent: function () {
             var that = this;
-            window.addEventListener("storage", function(value) {
+            window.addEventListener("storage", function (value) {
                 var text = localStorage.getItem("lastStationText");
                 var str = localStorage.getItem("chosenStationNode");
-                if (str && JSON.parse(str).stationName&&!JSON.parse(str).stationAreaName) {
-                    if (!dragIocnObj.currentEdit &&!stationPid.clickStation&&JSON.parse(str).text != text) {
-                       //移除
-                    	localStorage.removeItem("pidVersionId");
-                    	window.location.reload();
-                    } else if (JSON.parse(str).text != text &&  !stationPid.clickStation) {
-                        baseConfirm("是否放弃", "当前绘制的还没有保存", function() {
+                if (str && JSON.parse(str).stationName && !JSON.parse(str).stationAreaName) {
+                    if (!dragIocnObj.currentEdit && !stationPid.clickStation && JSON.parse(str).text != text) {
+                        //移除
+                        localStorage.removeItem("pidVersionId");
+                        window.location.reload();
+                    } else if (JSON.parse(str).text != text && !stationPid.clickStation) {
+                        baseConfirm("是否放弃", "当前绘制的还没有保存", function () {
                             window.location.reload();
-                        }, function() {
+                        }, function () {
                             var li = $(window.parent.document).find(".node-tree2");
                             for (var i = 0; i < li.length; i++) {
                                 if (li.eq(i).text() === text) {
@@ -42,19 +42,19 @@ $(document).ready(function() {
                 }
             });
             $("#selectStationPidVersion").change(
-                function() {
+                function () {
                     localStorage.setItem("pidVersionId", $(
                         "#selectStationPidVersion").val());
                     window.location.reload();
                 });
         },
-        initStation: function() {
+        initStation: function (isInit) {
             var str = localStorage.getItem("chosenStationNode");
             if (str) {
                 var obj = JSON.parse(str);
                 if (obj.stationOid && obj.stationName) {
                     localStorage.setItem("lastStationText", obj.text); //记录上一次取消时候的站名
-                    this.loadSelect(obj.stationOid);
+                    this.loadSelect(obj.stationOid, isInit);
                 } else {
                     baseMsg("请选择具体的场站");
                 }
@@ -62,7 +62,7 @@ $(document).ready(function() {
                 baseMsg("请选择具体的场站");
             }
         },
-        loadSelect: function(stationOid) {
+        loadSelect: function (stationOid, isInit) {
             var that = this;
             $.ajax({
                 url: rootPath + "stationPidVersion/getVersions.do",
@@ -73,26 +73,26 @@ $(document).ready(function() {
                 cache: false,
                 dataType: 'json',
                 contentType: 'application/json;charset=utf-8',
-                success: function(res) {
+                success: function (res) {
                     if (res.code == "success") {
                         if (res.data.length > 0) {
-                            that.renderSelect(res.data);
+                            that.renderSelect(res.data, isInit);
                         }
                     }
                 }
             });
         },
-        renderSelect: function(data) {
+        renderSelect: function (data, isInit) {
             var pidVersionId = localStorage.getItem("pidVersionId");
             var str = "";
             $("#selectStationPidVersion").html("");
-            data.forEach(function(value, index) {
+            data.forEach(function (value, index) {
                 var name = value.pidVersionName;
                 if (value.isPublish == "1") {
                     name += "(发布版)";
                 }
-                	  str += "<option value='" + value.oid + "'>" +
-                      name + "</option>";
+                str += "<option value='" + value.oid + "'>" +
+                    name + "</option>";
 
             });
             $("#selectStationPidVersion").append(str);
@@ -101,11 +101,11 @@ $(document).ready(function() {
             }
             // 根据选中的PID版本进行绘制
             var versionId = $("#selectStationPidVersion").val();
-            if (versionId) {
+            if (versionId && !isInit) {
                 this.renderPidChartByversionId(versionId);
             }
         },
-        renderPidChartByversionId: function(versionId) {
+        renderPidChartByversionId: function (versionId) {
             var that = this;
             $.ajax({
                 url: rootPath + "StationPidChart/getPidChart.do?pidVersionId=" +
@@ -114,10 +114,10 @@ $(document).ready(function() {
                 cache: false,
                 dataType: 'json',
                 contentType: 'application/json;charset=utf-8',
-                success: function(res) {
-                    console.log(res);
+                success: function (res) {
                     if (res.code == "success") {
                         if (res.data) {
+
                             editSvgObj.renderChart(res.data);
                         }
                     }
@@ -129,7 +129,7 @@ $(document).ready(function() {
 /*
  * * creeated by GF on 2017.12.04 * svg画布操作对象
  */
-(function(window, Raphael, $, RaphaelScreen, attrObj) {
+(function (window, Raphael, $, RaphaelScreen, attrObj) {
     // creeated by GF on 2017.11.28
     window.editSvgObj = {
         raphael: null, // svg的raphael实例
@@ -138,7 +138,7 @@ $(document).ready(function() {
 
         selectedShapeList: [],
 
-        init: function() {
+        init: function () {
             this.initRaphael();
 
             // $.ajax({
@@ -146,12 +146,13 @@ $(document).ready(function() {
             //     method: "get",
             //     async: true,
             //     success: function (res) {
+            //         res = res.slice(1,100)
             //             editSvgObj.renderChart(JSON.stringify(res));
             //     }
             // });
 
         },
-        initRaphael: function() {
+        initRaphael: function () {
             var that = this;
             this.raphaelScreen = new RaphaelScreen({
                 'sId': 'holder',
@@ -168,13 +169,13 @@ $(document).ready(function() {
             // this.raphaelScreen.setViewBox(0, 0, 2000, 2000);
             // this.raphaelScreen.setViewBox(400, 800, 800, 1400);
         },
-        bindShapeEvent: function(shape) {
+        bindShapeEvent: function (shape) {
             var that = this;
             shape.setMovable(true);
-            shape.clickFun = function(shape) {
+            shape.clickFun = function (shape) {
                 that.chooseGeometry(shape);
             };
-            shape.overFun = function(shape) {
+            shape.overFun = function (shape) {
                 if (shape.raphaelScreen.state !== 'addPoint')
                     return;
                 shape.showConnectPoints();
@@ -182,7 +183,7 @@ $(document).ready(function() {
                     cursor: 'crosshair'
                 });
             };
-            shape.outFun = function(shape) {
+            shape.outFun = function (shape) {
                 if (shape.raphaelScreen.state !== 'addPoint')
                     return;
                 shape.hideConnectPoints();
@@ -192,23 +193,23 @@ $(document).ready(function() {
             };
 
         },
-        chooseGeometry: function(shape) { // 点击选择元件
+        chooseGeometry: function (shape) { // 点击选择元件
             if (this.raphaelScreen.downKeyName !== 'Control') {
                 this.unselectAllShape(shape);
             }
             shape.reverseSelect(); // 选中或者不选中
             this.setSelectedShapeList();
         },
-        unselectAllShape: function(shapeExcept) { // 取消选中所有元件
+        unselectAllShape: function (shapeExcept) { // 取消选中所有元件
             // console.log(this.collection.getSelectShape())
-            this.collection.getSelectShape().forEach(function(shape) {
+            this.collection.getSelectShape().forEach(function (shape) {
                 if (shapeExcept && shapeExcept.id === shape.id) {
                     return;
                 }
                 shape.unSelect();
             });
         },
-        setSelectedShapeList: function() { // 设置选中的元件
+        setSelectedShapeList: function () { // 设置选中的元件
             // var arr = this.collection.getSelectShape().filter(function (item)
             // {
             // return item.bitNumber;
@@ -221,33 +222,34 @@ $(document).ready(function() {
             }
             // console.log(this.selectedShapeList)
         },
-        selectShapeByRect: function(rect) { // 框选元件
+        selectShapeByRect: function (rect) { // 框选元件
             if (this.raphaelScreen.downKeyName !== 'Control') {
                 this.unselectAllShape();
                 this.selectedShapeList = [];
             }
             var obox = rect.getBBox();
             var ashape = this.collection.getGeometry(obox);
-            ashape.forEach(function(item) {
+            ashape.forEach(function (item) {
                 item.select();
             });
             this.setSelectedShapeList();
             // console.log('框选：',this.selectedShapeList)
             // rect.hide();
         },
-        moveShapes: function(dx, dy) {
+        moveShapes: function (dx, dy) {
             // console.log('this.selectedShapeList', this.selectedShapeList)
             if (this.selectedShapeList.length > 0) {
                 this.collection.moveShapes(this.selectedShapeList, dx, dy);
             }
         },
-        renderChart: function(data) {
+        renderChart: function (data) {
             var that = this;
             var aShapes = JSON.parse(data);
             that.collection.setSvgSizeByShapes(aShapes); // 设定画布范围
-            that.collection.createGeometrys(aShapes, function(aShapeList) { // 渲染图形
-                console.log('加载完成')
-                    // fn && fn(aShapeList);
+            that.collection.createGeometrys(aShapes, function (aShapeList) { // 渲染图形
+                aShapeList.forEach(function (shape) {
+                    that.bindShapeEvent(shape);
+                });
             });
         },
     }
@@ -257,10 +259,10 @@ $(document).ready(function() {
  * * 作者：creeated by GF on 2017.12.07 * 模块：生成图形模块，拖拽icon生成图形 * 依赖 ：ShapeConfig,
  * Accordion, facilityConfig * 入参 editSvgObj
  */
-(function(window, $, ShapeConfig, Accordion, facilityConfig) {
+(function (window, $, ShapeConfig, Accordion, facilityConfig) {
     window.dragIocnObj = {
         currentEdit: false,
-        init: function(editSvgObj) {
+        init: function (editSvgObj) {
             this.renderImgIcons();
             this.bindEvent();
             this.collection = editSvgObj.collection;
@@ -268,14 +270,14 @@ $(document).ready(function() {
             this.editSvgObj = editSvgObj;
 
         },
-        bindEvent: function() {
+        bindEvent: function () {
             this.bindEvent_Accordion();
             this.bindEvent_dragIcon();
         },
-        bindEvent_Accordion: function() { // 使用手风琴插件
+        bindEvent_Accordion: function () { // 使用手风琴插件
             var that = this;
             var accordion = new Accordion($('#accordion'), false);
-            var setAccordionMenuHeight = function() { // 设置手风琴展开区域的高度
+            var setAccordionMenuHeight = function () { // 设置手风琴展开区域的高度
                 var outHeight = $('.toolWrapp').height();
                 var nlist = $(".accordion>li").length;
                 var listHeight = $(".accordion>li>.link").outerHeight();
@@ -284,11 +286,11 @@ $(document).ready(function() {
             };
             setAccordionMenuHeight();
             $(".accordion>li>.link").first().trigger('click'); // 默认展开第一个菜单
-            $(window).on('resize', function() {
+            $(window).on('resize', function () {
                 setAccordionMenuHeight();
             })
         },
-        bindEvent_dragIcon: function() { // 绑定从工具栏中拖动icon,在svg上画图形
+        bindEvent_dragIcon: function () { // 绑定从工具栏中拖动icon,在svg上画图形
             var that = this;
             // var x_start = 0;
             // var y_start = 0;
@@ -296,7 +298,7 @@ $(document).ready(function() {
             var isIconMoving = false;
             var iconImg = $('<img id="selectpanel" style="position: absolute; top: -100px; left: -100px; cursor: default; z-Index: 9999;">')
 
-            $('.js_imgtool').on('mousedown', function(e) {
+            $('.js_imgtool').on('mousedown', function (e) {
                 isIconMoving = true;
 
                 var ft = $(e.currentTarget).attr('data-id');
@@ -314,7 +316,7 @@ $(document).ready(function() {
                     $('body').append(iconImg);
                 }
             });
-            $(document).on('mousemove', function(e) { // 移动img
+            $(document).on('mousemove', function (e) { // 移动img
                 if (isIconMoving) {
                     iconImg.css({
                         top: e.pageY - oIcon.svgHeight / 2,
@@ -323,47 +325,30 @@ $(document).ready(function() {
                 }
                 e.preventDefault();
             });
-            $(document)
-                .on(
-                    'mouseup',
-                    function(e) {
-                        if (!isIconMoving)
-                            return;
-                        isIconMoving = false;
-                        iconImg.hide();
+            $(document).on('mouseup', function (e) {
+                if (!isIconMoving) return;
+                isIconMoving = false;
+                iconImg.hide();
 
-                        var oLoc = that.raphaelScreen.getSvgCoordinate(
-                            e.pageX, e.pageY);
-                        if (!oLoc)
-                            return;
-                        var x = oLoc.x;
-                        var y = oLoc.y;
-                        var shape = null;
-                        if (oIcon.geometryType === 'GEOMETRY_POLYGON') {
-                            shape = that.collection
-                                .createShape(oIcon.url, x, y,
-                                    oIcon.svgWidth,
-                                    oIcon.svgHeight,
-                                    oIcon.facilityType,
-                                    oIcon.shapeType);
-                        } else if (oIcon.geometryType === 'GEOMETRY_POLYLINE' ||
-                            oIcon.geometryType === 'GEOMETRY_LINE') {
-                            shape = that.collection.createLine(
-                                oIcon.lineType, oIcon.dasharray,
-                                x - 40, y, oIcon.facilityType,
-                                "#000", "#000", 3, 2);
-                        } else if (oIcon.facilityType == ShapeConfig.LINE_WIRE) {
-                            shape = that.collection.createWireLine(
-                                x - 40, y, oIcon.facilityType);
-                        } else if (oIcon.geometryType == ShapeConfig.GEOMETRY_TEXT) {
-                            shape = that.collection.createText('A', x,
-                                y, '#000', oIcon.facilityType);
-                        }
-                        that.currentEdit = true;
-                        that.editSvgObj.bindShapeEvent(shape);
-                    });
+                var oLoc = that.raphaelScreen.getSvgCoordinate(e.pageX, e.pageY);
+                if (!oLoc) return;
+                var x = oLoc.x;
+                var y = oLoc.y;
+                var shape = null;
+                if (oIcon.geometryType === 'GEOMETRY_POLYGON') {
+                    shape = that.collection.createShape(oIcon.url, x, y, oIcon.svgWidth, oIcon.svgHeight, oIcon.facilityType, oIcon.shapeType);
+                } else if (oIcon.geometryType === 'GEOMETRY_POLYLINE' || oIcon.geometryType === 'GEOMETRY_LINE') {
+                    shape = that.collection.createLine(oIcon.lineType, oIcon.dasharray, x - 40, y, oIcon.facilityType, "#000", "#000", 3, 2);
+                } else if (oIcon.facilityType == ShapeConfig.LINE_WIRE) {
+                    shape = that.collection.createWireLine(x - 40, y, oIcon.facilityType);
+                } else if (oIcon.geometryType == ShapeConfig.GEOMETRY_TEXT) {
+                    shape = that.collection.createText('A', x, y, '#000', oIcon.facilityType);
+                }
+                that.currentEdit = true;
+                that.editSvgObj.bindShapeEvent(shape);
+            });
         },
-        renderImgIcons: function() {
+        renderImgIcons: function () {
             var oIconsConfig = {
                 icon_basic: ['FACILITY_BAV', 'FACILITY_GAV', 'FACILITY_GLV',
                     'FACILITY_THV', 'FACILITY_FM', 'FACILITY_FA',
@@ -393,10 +378,11 @@ $(document).ready(function() {
                     'FACILITY_ARROW63', 'FACILITY_ARROW64',
                     'FACILITY_ARROW65', 'FACILITY_ARROW66',
                     'FACILITY_ARROW67', 'FACILITY_ARROW68',
-                    'FACILITY_ARROW69', 'FACILITY_ARROW70'                ]
+                    'FACILITY_ARROW69', 'FACILITY_ARROW70'
+                ]
 
             };
-            var createEachIconHtml = function(facilityType) {
+            var createEachIconHtml = function (facilityType) {
                 var oImg = facilityConfig[facilityType];
                 if (!oImg) {
                     console.log('未找到设备：', facilityType)
@@ -413,9 +399,9 @@ $(document).ready(function() {
                     ]
                     .join('');
             };
-            var createHtml = function(aIcons) {
+            var createHtml = function (aIcons) {
                 var sHtml = '';
-                aIcons.forEach(function(item, index, arr) {
+                aIcons.forEach(function (item, index, arr) {
                     if (index % 2 === 0) { // 偶数位，从0开始
                         var td01 = createEachIconHtml(item);
                         if (index + 1 !== arr.length) {
@@ -441,7 +427,7 @@ $(document).ready(function() {
 /**
  * 作者：creeated by GF on 2017.11.28 模块：顶部工具栏对象 依赖：window, $ 入参：editSvgObj
  */
-(function(window, $) {
+(function (window, $) {
     window.topToolsObj = {
         elem: {
             stateIcon: '.stateIcon',
@@ -459,12 +445,12 @@ $(document).ready(function() {
             saveas: '.saveas',
             publish: '.publish'
         },
-        init: function(editSvgObj) {
+        init: function (editSvgObj) {
             this.editSvgObj = editSvgObj;
             this.initElem();
             this.bindEvent();
         },
-        initElem: function() {
+        initElem: function () {
             var eles = this.elem;
             for (var name in eles) {
                 if (eles.hasOwnProperty(name)) {
@@ -472,70 +458,69 @@ $(document).ready(function() {
                 }
             }
         },
-        bindEvent: function() {
+        bindEvent: function () {
             var that = this;
 
             this.bindEvent_state();
             this.bindEvent_copyPaste();
             this.bindEvent_addPoint();
 
-            this.downloadBtn.on('click', function() { // 看全图
+            this.downloadBtn.on('click', function () { // 看全图
                 that.saveAsImage();
             });
-            this.saveBtn.on('click', function() { // 看全图
+            this.saveBtn.on('click', function () { // 看全图
                 that.save();
             });
-            this.saveas.on('click', function() { // 另存为
+            this.saveas.on('click', function () { // 另存为
                 that.saveAs();
             });
-            this.publish.on('click', function() { // 另存为
+            this.publish.on('click', function () { // 另存为
                 that.isPublish();
             });
-            this.viewallIcon.on('click', function() { // 看全图
+            this.viewallIcon.on('click', function () { // 看全图
                 var aShapes = that.editSvgObj.collection.shapeList;
                 if (aShapes && aShapes.length > 0) {
                     that.editSvgObj.collection.setSvgSizeByShapes(aShapes);
                 }
             });
-            this.alignBtn.on('click', function(e) { //
+            this.alignBtn.on('click', function (e) { //
                 var type = $(e.currentTarget).attr('data-type');
                 var shapeInsts = that.editSvgObj.collection.getSelectShape();
                 // console.log(shapeInsts, type)
                 that.alignShape(shapeInsts, type);
             });
-            this.rotateBtn.on('click', function(e) { //
+            this.rotateBtn.on('click', function (e) { //
                 var angle = $(e.currentTarget).attr('data-angle');
                 var shapeInsts = that.editSvgObj.collection.getSelectShape();
-                console.log(shapeInsts, angle)
 
                 that.rotateShape(shapeInsts, angle);
             });
 
-            $(window).on('keydown', function(e) { // delete 删除图形
+            $(window).on('keydown', function (e) { // delete 删除图形
                 if (e.key !== 'Delete')
                     return;
                 var shapeInsts = that.editSvgObj.collection.getSelectShape();
                 var length = shapeInsts.length;
                 if (length > 0) {
-                	baseConfirm("提示", '确定删除所选的 ' + length + ' 个图形？', function() {
-                		shapeInsts.forEach(function(shape) {
+                    baseConfirm("提示", '确定删除所选的 ' + length + ' 个图形？', function () {
+                        shapeInsts.forEach(function (shape) {
                             shape.remove();
                         });
                     });
                 }
             });
         },
-        bindEvent_state: function() {
+        bindEvent_state: function () {
             var that = this;
-            this.stateIcon.on('mouseover', function(e) {
+            this.stateIcon.on('mouseover', function (e) {
                 var image = e.currentTarget;
                 image.src = image.src.replace('_01', '_02');
             });
-            this.stateIcon.on('mouseout', function(e) {
+            this.stateIcon.on('mouseout', function (e) {
                 var image = e.currentTarget;
                 image.src = image.src.replace('_02', '_01');
             });
-            this.dragIcon.on('click', function(e) {
+            this.dragIcon.on('click', function (e) {
                 var image = e.currentTarget;
                 var state = that.editSvgObj.raphaelScreen.state;
                 that._removeAllStateStyle();
@@ -548,7 +533,7 @@ $(document).ready(function() {
 
                 }
             });
-            this.enlargeIcon.on('click', function(e) {
+            this.enlargeIcon.on('click', function (e) {
                 var image = e.currentTarget;
                 var state = that.editSvgObj.raphaelScreen.state;
                 that._removeAllStateStyle();
@@ -561,15 +546,15 @@ $(document).ready(function() {
                 }
             });
         },
-        _removeAllStateStyle: function() {
-            this.stateIcon.each(function(index, image) {
+        _removeAllStateStyle: function () {
+            this.stateIcon.each(function (index, image) {
                 image.src = image.src.replace('_03', '_01');
                 image.src = image.src.replace('_02', '_01');
             });
         },
-        bindEvent_addPoint: function() {
+        bindEvent_addPoint: function () {
             var that = this;
-            this.addPointBtn.on('click', function(e) {
+            this.addPointBtn.on('click', function (e) {
                 var image = e.currentTarget;
 
                 that._removeAllStateStyle();
@@ -581,7 +566,7 @@ $(document).ready(function() {
                     image.src = image.src.replace('_01', '_03');
                 }
             });
-            this.editSvgObj.raphaelScreen.$svgWrap.on('click', function(e) {
+            this.editSvgObj.raphaelScreen.$svgWrap.on('click', function (e) {
                 if (that.editSvgObj.raphaelScreen.state !== 'addPoint' ||
                     e.button !== 0)
                     return;
@@ -598,52 +583,43 @@ $(document).ready(function() {
                 shape.showConnectPoints();
             });
         },
-        bindEvent_copyPaste: function() {
+        bindEvent_copyPaste: function () {
             var that = this;
             var oCopy = null;
-            var copyfn = function() { // 复制已选
+            var copyfn = function () { // 复制已选
                 var shapeInsts = that.editSvgObj.collection.getSelectShape();
-                if (shapeInsts.length === 0)
-                    return;
-                oCopy = that.editSvgObj.collection
-                    .getCopyObjOfSelectedShapes(shapeInsts);
+                if (shapeInsts.length === 0) return;
+                oCopy = that.editSvgObj.collection.getCopyObjOfSelectedShapes(shapeInsts);
             };
-            var changeToPasteState = function() {
-                if (!oCopy)
-                    return;
+            var changeToPasteState = function () {
+                if (!oCopy) return;
                 that._removeAllStateStyle();
                 that.editSvgObj.raphaelScreen.setState('paste'); // 取消状态
             };
             this.copyBtn.on('click', copyfn);
             this.pasteBtn.on('click', changeToPasteState);
-            $(window).on('keydown', function(e) { // control c 的快捷键复制
+            $(window).on('keydown', function (e) { // control c 的快捷键复制
                 // console.log(e)
                 // console.log(!e.ctrlKey || e.key !== 'c')
-                if (!(e.ctrlKey && e.key === 'c'))
-                    return;
+                if (!(e.ctrlKey && e.key === 'c')) return;
                 copyfn();
                 changeToPasteState();
             });
 
-            this.editSvgObj.raphaelScreen.$svgWrap.on('click', function(e) {
-                if (that.editSvgObj.raphaelScreen.state !== 'paste' || !oCopy ||
-                    e.button !== 0)
-                    return;
-                var oloc = that.editSvgObj.raphaelScreen.getSvgCoordinate(
-                    e.pageX, e.pageY)
-                var aShapeObjs = that.editSvgObj.collection
-                    .setNewPositionOfCopyObj(oCopy, oloc.x, oloc.y);
-                that.editSvgObj.collection.createGeometrys(aShapeObjs,
-                    function(aShapeList) {
-                        aShapeList.forEach(function(shape) {
-                            that.editSvgObj.bindShapeEvent(shape);
-                        });
+            this.editSvgObj.raphaelScreen.$svgWrap.on('click', function (e) {
+                if (that.editSvgObj.raphaelScreen.state !== 'paste' || !oCopy || e.button !== 0) return;
+                var oloc = that.editSvgObj.raphaelScreen.getSvgCoordinate(e.pageX, e.pageY);
+                var aShapeObjs = that.editSvgObj.collection.setNewPositionOfCopyObj(oCopy, oloc.x, oloc.y);
+                that.editSvgObj.collection.createGeometrys(aShapeObjs, function (aShapeList) {
+                    aShapeList.forEach(function (shape) {
+                        that.editSvgObj.bindShapeEvent(shape);
                     });
+                });
                 that.editSvgObj.raphaelScreen.setState();
                 oCopy = null;
             });
         },
-        alignShape: function(aShapeInst, sAlignSype) { // 对齐图形
+        alignShape: function (aShapeInst, sAlignSype) { // 对齐图形
             // 入参 aShapeInst
             // 入参 sAlignSype: left right center top middle bottom
             var list = aShapeInst;
@@ -705,17 +681,17 @@ $(document).ready(function() {
                 }
             }
         },
-        rotateShape: function(aShapeInst, angle) {
+        rotateShape: function (aShapeInst, angle) {
             var list = aShapeInst;
-            aShapeInst.forEach(function(shape, index) {
+            aShapeInst.forEach(function (shape, index) {
                 if (shape.rotate)
                     shape.rotate(angle);
             });
         },
-        saveAsImage: function() { // facilityConfig
+        saveAsImage: function () { // facilityConfig
             var svgXml = $('#jas_raphael').html();
 
-            var getBase64Image = function(src, width, height, ext) {
+            var getBase64Image = function (src, width, height, ext) {
                 var image = new Image();
                 image.src = src;
                 image.width = width;
@@ -729,7 +705,7 @@ $(document).ready(function() {
                 var base64 = canvas.toDataURL("image/" + ext);
                 return base64;
             }
-            var replaceUrl = function(sHtml) {
+            var replaceUrl = function (sHtml) {
                 for (var a in facilityConfig) {
                     var regexp = new RegExp(facilityConfig[a].url, 'gm');
                     if (sHtml.match(regexp)) {
@@ -742,7 +718,7 @@ $(document).ready(function() {
                 return sHtml;
             };
 
-            var getNowDate = function() {
+            var getNowDate = function () {
                 // 获取当前时间字符串
                 var now = new Date();
                 var year = now.getFullYear();
@@ -761,7 +737,7 @@ $(document).ready(function() {
             image.src = 'data:image/svg+xml;base64,' +
                 window
                 .btoa(unescape(encodeURIComponent(replaceUrl(svgXml)))); // 给图片对象写入base64编码的svg流
-            image.onload = function() {
+            image.onload = function () {
                 var canvas = document.createElement('canvas'); // 准备空画布
                 canvas.width = $('#jas_raphael svg').width();
                 canvas.height = $('#jas_raphael svg').height();
@@ -790,7 +766,8 @@ $(document).ready(function() {
                 var day = (now.getDate()).toString();
                 if (month.length == 1) {
                     month = "0" + month;
-                }   if (day.length == 1) {
+                }
+                if (day.length == 1) {
                     day = "0" + day;
                 }
                 var dateTime = year + month + day;
@@ -801,14 +778,14 @@ $(document).ready(function() {
                 a.click(); // 点击触发下载
             };
         },
-        save: function() {
-            $("#zcdiv").css("display","block");
+        save: function () {
+            $("#zcdiv").css("display", "block");
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
             var pidVersion = $("#selectStationPidVersion").val(); //版本id；如果有更新 没有是保存
             if (!node.stationName) {
                 baseMsg("请选择具体场站");
-                stationPid.clickStation=true;
+                stationPid.clickStation = true;
                 return;
             }
             var data = {
@@ -822,13 +799,13 @@ $(document).ready(function() {
             }
             this.saveToServer(data);
         },
-        saveAs: function() { //另存为直接进行保存
+        saveAs: function () { //另存为直接进行保存
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
-            $("#zcdiv").css("display","block");
+            $("#zcdiv").css("display", "block");
             if (!node.stationName) {
                 baseMsg("请选择具体场站");
-                stationPid.clickStation=true;
+                stationPid.clickStation = true;
                 return;
             }
             var data = {
@@ -839,15 +816,15 @@ $(document).ready(function() {
             };
             this.saveToServer(data);
         },
-        isPublish: function() { //版本id,根据版本id去进行发布
+        isPublish: function () { //版本id,根据版本id去进行发布
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
             var pidVersion = $("#selectStationPidVersion").val(); //版本id
-            $("#zcdiv").css("display","block");
+            $("#zcdiv").css("display", "block");
             $("#loading").text("正在发布，请稍候。。。");
             if (!node.stationName) {
                 baseMsg("请选择具体场站");
-                stationPid.clickStation=true;
+                stationPid.clickStation = true;
                 return;
             }
             var data = {
@@ -859,7 +836,7 @@ $(document).ready(function() {
             };
             this.saveToServer(data);
         },
-        saveToServer: function(data) {
+        saveToServer: function (data) {
             $.ajax({
                 url: rootPath + "StationPidChart/add.do",
                 type: "POST",
@@ -867,18 +844,17 @@ $(document).ready(function() {
                 data: JSON.stringify(data),
                 dataType: 'json',
                 contentType: 'application/json;charset=utf-8',
-                success: function(res) {
+                success: function (res) {
                     if (res.code == "success") {
                         if (data.isPublish == "1") {
                             baseMsg("发布成功");
-                            dragIocnObj.currentEdit=false;
+                            dragIocnObj.currentEdit = false;
                         } else {
                             baseMsg("保存成功");
-                            dragIocnObj.currentEdit=false;
-//                            window.location.reload();
-                            stationPid.initStation();
+                            dragIocnObj.currentEdit = false;
+                            stationPid.initStation("save");
                         }
-                        $("#zcdiv").css("display","none");
+                        $("#zcdiv").css("display", "none");
                     }
                 }
             });
