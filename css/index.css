@@ -239,3 +239,30 @@ ul,li{
 .outline:active{
     outline:none;
 }
+/**PID编辑页面的遮罩层*/
+.pid_mask_layer{
+position:absolute;
+top:0;
+left:0;
+z-index:10000;
+width:100%;
+height:100%;
+background:#000;
+opacity:0.2;
+}
+.mask_layer_div{
+	position:relative;
+	width:100%;
+	height:100%;
+}
+.mask_layer_text{
+	position:absolute;
+	top:37%;
+	left:50%;
+	margin-left:-60px;
+	height:55px;
+	width:170px;
+	border:0px solid red;
+	padding:0;
+	
+}

@@ -22,7 +22,9 @@ $(document).ready(function() {
                 var str = localStorage.getItem("chosenStationNode");
                 if (str && JSON.parse(str).stationName&&!JSON.parse(str).stationAreaName) {
                     if (!dragIocnObj.currentEdit &&!stationPid.clickStation&&JSON.parse(str).text != text) {
-                        window.location.reload();
+                       //移除
+                    	localStorage.removeItem("pidVersionId");
+                    	window.location.reload();
                     } else if (JSON.parse(str).text != text &&  !stationPid.clickStation) {
                         baseConfirm("是否放弃", "当前绘制的还没有保存", function() {
                             window.location.reload();
@@ -42,7 +44,7 @@ $(document).ready(function() {
             $("#selectStationPidVersion").change(
                 function() {
                     localStorage.setItem("pidVersionId", $(
-                        "#selectStationPidVersion").val())
+                        "#selectStationPidVersion").val());
                     window.location.reload();
                 });
         },
@@ -89,8 +91,9 @@ $(document).ready(function() {
                 if (value.isPublish == "1") {
                     name += "(发布版)";
                 }
-                str += "<option value='" + value.oid + "'>" +
-                    name + "</option>"
+                	  str += "<option value='" + value.oid + "'>" +
+                      name + "</option>";
+
             });
             $("#selectStationPidVersion").append(str);
             if (pidVersionId) {
@@ -513,9 +516,11 @@ $(document).ready(function() {
                     return;
                 var shapeInsts = that.editSvgObj.collection.getSelectShape();
                 var length = shapeInsts.length;
-                if (length > 0 && confirm('确定删除所选的 ' + length + ' 个图形？')) {
-                    shapeInsts.forEach(function(shape) {
-                        shape.remove();
+                if (length > 0) {
+                	baseConfirm("提示", '确定删除所选的 ' + length + ' 个图形？', function() {
+                		shapeInsts.forEach(function(shape) {
+                            shape.remove();
+                        });
                     });
                 }
             });
@@ -797,6 +802,7 @@ $(document).ready(function() {
             };
         },
         save: function() {
+            $("#zcdiv").css("display","block");
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
             var pidVersion = $("#selectStationPidVersion").val(); //版本id；如果有更新 没有是保存
@@ -819,6 +825,7 @@ $(document).ready(function() {
         saveAs: function() { //另存为直接进行保存
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
+            $("#zcdiv").css("display","block");
             if (!node.stationName) {
                 baseMsg("请选择具体场站");
                 stationPid.clickStation=true;
@@ -836,6 +843,8 @@ $(document).ready(function() {
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
             var pidVersion = $("#selectStationPidVersion").val(); //版本id
+            $("#zcdiv").css("display","block");
+            $("#loading").text("正在发布，请稍候。。。");
             if (!node.stationName) {
                 baseMsg("请选择具体场站");
                 stationPid.clickStation=true;
@@ -866,9 +875,10 @@ $(document).ready(function() {
                         } else {
                             baseMsg("保存成功");
                             dragIocnObj.currentEdit=false;
+//                            window.location.reload();
                             stationPid.initStation();
                         }
-
+                        $("#zcdiv").css("display","none");
                     }
                 }
             });

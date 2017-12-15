@@ -5,7 +5,7 @@
  ** 依赖 ：ShapeConfig,ShapeBean,PolyLineBean,CurveLineBean,
  ** 入参 ：raphaelScreen 实例
  */
-(function (ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean ) {
+(function (ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean) {
     // 图形之间的关系
     ShapeCollection = function (raphaelScreen) { //r参RaphaelScreen实例
         this.raphaelScreen = raphaelScreen;
@@ -126,7 +126,7 @@
         getGeometryByBitNumber: function (bitNumber) { // 根据位号返回shape
             var shape = null;
             for (var i = 0; i < this.shapeList.length; i++) {
-                if ( this.shapeList[i].bitNumber && bitNumber == this.shapeList[i].bitNumber) {
+                if (this.shapeList[i].bitNumber && bitNumber == this.shapeList[i].bitNumber) {
                     shape = this.shapeList[i];
                     break;
                 }
@@ -322,7 +322,7 @@
                 aShapeObjs: JSON.parse(s)
             };
         },
-        setRoadColor: function (sRoad, color,sTip) { //设定线路的状态，入参线路名称，颜色，线路状态
+        setRoadColor: function (sRoad, color, sTip) { //设定线路的状态，入参线路名称，颜色，线路状态
             color = color || 'blue';
             var shape = this.getGeometryByMainRealtext(sRoad);
 
@@ -335,13 +335,13 @@
 
                 var x = box.x2 + 10;
                 var y = centerY - height / 2 - 2;
-                if(!this._roadStateMap){
+                if (!this._roadStateMap) {
                     this._roadStateMap = {};
                 }
-                if(!this._roadStateMap[sRoad]){
+                if (!this._roadStateMap[sRoad]) {
                     this._roadStateMap[sRoad] = {};
                 }
-                if(this._roadStateMap[sRoad].rect){
+                if (this._roadStateMap[sRoad].rect) {
                     this._roadStateMap[sRoad].rect.remove();
                 }
                 this._roadStateMap[sRoad].rect = this.raphael.rect(x, y, width, height);
@@ -351,12 +351,12 @@
                     opacity: 0.8,
                     r: 2
                 });
-                if(sTip) {
-                    if(this._roadStateMap[sRoad].text){
+                if (sTip) {
+                    if (this._roadStateMap[sRoad].text) {
                         this._roadStateMap[sRoad].text.remove();
                     }
-                    this._roadStateMap[sRoad].text = this.raphael.text(x+width/2, y+height/2, sTip).attr({
-                        'fill':'#fff',
+                    this._roadStateMap[sRoad].text = this.raphael.text(x + width / 2, y + height / 2, sTip).attr({
+                        'fill': '#fff',
                         'font-size': 18,
                         'font-family': '微软雅黑',
                     });
@@ -364,10 +364,10 @@
 
             }
         },
-        setRoadsColor : function(aRoads,color,sTip){ //批量设定线路状态
+        setRoadsColor: function (aRoads, color, sTip) { //批量设定线路状态
             var that = this;
-            aRoads.forEach(function(sRoad){
-                that.setRoadColor(sRoad, color,sTip)
+            aRoads.forEach(function (sRoad) {
+                that.setRoadColor(sRoad, color, sTip)
             });
         },
         createLineConnection: function (sLineId, beginShapeId, endShapeId) { //创建连接关系
@@ -388,7 +388,7 @@
                 lineInst.endShape.addLine(lineInst);
             }
         },
-        createConnections: function (aGeos,aShapeList,finishedfn) { //批量创建连接关系
+        createConnections: function (aGeos, aShapeList, finishedfn) { //批量创建连接关系
             // 入参
             var that = this;
             var index = 0;
@@ -410,18 +410,18 @@
             // createConnection(aGeos,index);
 
             aGeos.forEach(function (item, index, attr) {
-                setTimeout(function(){
+                setTimeout(function () {
                     that.createLineConnection(item.id, item.beginShape, item.endShape);
-                    if(index >= aGeos.length - 1){
-                        console.log('____________  创建连接关系耗时：',(new Date() -time)/1000 + '秒');
+                    if (index >= aGeos.length - 1) {
+                        console.log('____________  创建连接关系耗时：', (new Date() - time) / 1000 + '秒');
                         finishedfn && finishedfn(aShapeList);
                         console.log('____________  绘图完成')
                     }
-                },0);
+                }, 0);
             });
 
         },
-        createGeometrys: function (aGeos, finishedfn,isNotCreateConnect) { //批量创建图形
+        createGeometrys: function (aGeos, finishedfn, isNotCreateConnect) { //批量创建图形
             var that = this;
             var index = 0;
             var aShapeList = [];
@@ -431,12 +431,12 @@
 
             var drawShape = function (aGeos, index) {
                 if (index >= aGeos.length) {
-                    console.log('____________  绘制耗时：',(new Date() -time)/1000 + '秒');
-                    if(isNotCreateConnect){ //如果不创建连接关系
+                    console.log('____________  绘制耗时：', (new Date() - time) / 1000 + '秒');
+                    if (isNotCreateConnect) { //如果不创建连接关系
                         finishedfn && finishedfn(aShapeList);
                         console.log('____________  绘图完成')
-                    }else{
-                        that.createConnections(aGeos,aShapeList,finishedfn);
+                    } else {
+                        that.createConnections(aGeos, aShapeList, finishedfn);
                     }
                     return;
                 }
@@ -451,15 +451,47 @@
             drawShape(aGeos, index);
         },
         setSvgSizeByShapes: function (aGeos, isResizeSvg) { //根据shapes获取svg的最适宜的大小
-            var x0 = y0 = x1 = y1 = 0;
+            if (!aGeos || aGeos.length < 1) {
+                return;
+            }
+            var x0 = y0 = 100000000;
+            var x1 = y1 = 0;
+
+
             aGeos.forEach(function (shape, index, arr) {
-                var x = shape.x + shape.width + 100;
-                var y = shape.y + shape.height + 100;
+
+                var xArr = [shape.bx,shape.cx,shape.ex,shape.cx - shape.width/2,shape.cx + shape.width/2].filter(function(num){
+                    return num;
+                });
+                var yArr = [shape.by,shape.cy,shape.ey,shape.cy - shape.height/2,shape.cy + shape.height/2].filter(function(num){
+                    return num;
+                });;
+
+
+                var _x = Math.min.apply(null,xArr) - 100;
+                var _y = Math.min.apply(null,yArr) - 100;
+                var x = Math.max.apply(null,xArr) + 100;
+                var y = Math.max.apply(null,yArr) + 100;
+
+                _x = _x < 0 ? 0 : _x;
+                _y = _y < 0 ? 0 : _y;
+
+                x0 = x0 < _x ? x0 : _x;
+                y0 = y0 < _y ? y0 : _y;
                 x1 = x1 < x ? x : x1;
                 y1 = y1 < y ? y : y1;
+
             });
-            isResizeSvg && this.raphael.setSize(x1, y1);
-            this.raphaelScreen.setViewBox(0, 0, x1, y1);
+            var resetxy = function (a, b) {
+                if (b - a > 500) return [a, b];
+                var m = (a + b) / 2;
+                if (m < 250) return [0, 500];
+                return [m - 250, m + 250];
+            };
+            var xArr = resetxy(x0, x1);
+            var yArr = resetxy(y0, y1);
+            isResizeSvg && this.raphael.setSize(xArr[1], yArr[1]);
+            this.raphaelScreen.setViewBox(xArr[0], yArr[0],xArr[1], yArr[1]);
             return {
                 x: x1,
                 y: y1

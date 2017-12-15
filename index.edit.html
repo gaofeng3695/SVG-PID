@@ -29,7 +29,7 @@
                                 </td>
                                 <td class="whitespace"></td>
                                 <td style="padding: 0px;">
-                                    <select id="selectStationPidVersion" name="selectStationPidVersion" class="  form-control" style="width:150px;">
+                                    <select id="selectStationPidVersion" name="selectStationPidVersion" autocomplete="off" class="  form-control" style="width:150px;">
                                        <option value="">请选择版本</option>
                                    </select>
                                 </td>
@@ -214,6 +214,13 @@
             <div class="svgWrapp">
                 <div id="holder" class="holder"></div>
             </div>
+            <div id="zcdiv" class="pid_mask_layer" style="display:none">
+                <div class="mask_layer_div">
+                <div id="loading" class="mask_layer_text" style="color:#fff !important">
+                  正在保存，请稍候。。。
+                </div>
+            </div>           
+        </div>
         </div>
     </div>
 
