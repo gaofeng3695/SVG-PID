@@ -1586,7 +1586,7 @@
                 _this.clickFun(_this);
             }
         };
-        var shapeOver = function (shape) {            console.log(shape)
+        var shapeOver = function (shape) {
             if(_this.canMove){
                 shape.width = shape.width * 2;
                 shape.height = shape.height * 2;

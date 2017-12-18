@@ -158,9 +158,9 @@
                 return shape.isTwinkle;
             });
         },
-        setTwinkleByBitNumberList: function (bitNumberList, color, nAllTime, nEachTime) { //入参位号id数组，闪烁背景色,设置原件闪烁
+        setTwinkleByBitNumberList: function (bitNumberList, color, nAllTime, nEachTime , isNotClearTwinkle) { //入参位号id数组，闪烁背景色,设置原件闪烁
             var that = this;
-            this.clearTwinkle();
+            !isNotClearTwinkle && this.clearTwinkle();
             if (!color) {
                 return;
             }

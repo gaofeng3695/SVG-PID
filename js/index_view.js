@@ -655,10 +655,20 @@ $(document).ready(function () {
         AbnormalAlarm: function (res) {
             var res = res;
             var abnormalArr = res.data.result;
-            var arr = [];
+            var arrClose = [];
+            var arrOpen=[];
+            var arr=[];
+            var alarmObjs=[];
+
             for (i = 0; i < abnormalArr.length; i++) {
-                arr.push(res.data.result[i].deviceLocationNo);
+                if(abnormalArr[i].changeStatus=="关"&&abnormalArr[i].deviceSteadyState==0){
+                	arrClose.push(abnormalArr[i].deviceLocationNo);
+                }else if(abnormalArr[i].changeStatus=="开"&&abnormalArr[i].deviceSteadyState==1){
+                	arrOpen.push(abnormalArr[i].deviceLocationNo);
+                }
+                arr.push(abnormalArr[i].deviceLocationNo);
             };
+
             if (drawSvgObj.isHasData) {
                 if (drawSvgObj.isLoaded) {
                     if (this.isWarning) {
@@ -666,7 +676,10 @@ $(document).ready(function () {
                         this.isWarning = false;
                     } else {
                         drawSvgObj.collection.locateShapes(arr);
-                        drawSvgObj.collection.setTwinkleByBitNumberList(arr, 'yellow');
+
+                        drawSvgObj.collection.setTwinkleByBitNumberList(arrClose,'yellow',null,null,true);
+                        drawSvgObj.collection.setTwinkleByBitNumberList(arrOpen,'red',null,null,true);
+
                         this.isWarning = true;
                     }
                 } else {
@@ -722,7 +735,7 @@ $(document).ready(function () {
                         var Oid = localStorage.getItem("stationOid")
                         var url = 'system/device/processchange/process_change_add_edit.html?stationId=' + Oid + "&bitNumber=" + bitNumber;
                         if (bitNumber != null && bitNumber != '' && bitNumber != 'undefined') {
-                            baseDialog(uuid(8), "阀门开关", url, 900, 500, ['发起', '取消'], ['saveData()']);
+                            baseDialog(uuid(8), "阀门开关", url, 900, 600, ['发起', '取消'], ['saveData()']);
                         }else if(type=="FACILITY_CREATETEXT"){
                         	baseMsg("请选择元件");
                         } else {
