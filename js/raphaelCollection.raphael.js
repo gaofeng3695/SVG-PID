@@ -520,6 +520,9 @@
             shape.raphael = this.raphael;
             shape.shapeCollection = this;
             shape.raphaelScreen = this.raphaelScreen;
+            if(this.history){
+                shape.history = this.history;
+            }
             shape.createShape();
             return shape;
         },

@@ -134,7 +134,7 @@ $(document).ready(function () {
                                 });
                                 that.isLoaded = true;
                                 fn && fn(aShapeList);
-                            },true);
+                            }, true);
                         }
                     }
                 }
@@ -155,8 +155,8 @@ $(document).ready(function () {
                 async: false,
                 success: function (res) {
                     for (var i = 0; i < res.data.device.length; i++) {
-                        var deviceStatus = res.data.device[i].deviceStatus;
-                        if (deviceStatus == '关') {
+                        var tapStatus = res.data.device[i].tapStatus;
+                        if (tapStatus == '关') {
                             ValveClosing.push(res.data.device[i].deviceLocationNo);
                         }
                     };
@@ -179,19 +179,19 @@ $(document).ready(function () {
                     console.log('请求失败');
                 }
             });
-            console.log('roadStatusMain：',roadStatusMain);
-            console.log('roadStatusSide：',roadStatusSide);
-            console.log('roadStatusUse：',roadStatusUse);
-            console.log('roadStatusDisable：',roadStatusDisable);
-            console.log('roadStatusNull：',roadStatusNull);
-            console.log('ValveClosing：',ValveClosing);
+            console.log('roadStatusMain：', roadStatusMain);
+            console.log('roadStatusSide：', roadStatusSide);
+            console.log('roadStatusUse：', roadStatusUse);
+            console.log('roadStatusDisable：', roadStatusDisable);
+            console.log('roadStatusNull：', roadStatusNull);
+            console.log('ValveClosing：', ValveClosing);
 
             this.collection.setShapeStateByBitNumberList('002', ValveClosing);
 
-            this.collection.setRoadsColor(roadStatusMain, 'green','主路');
-            this.collection.setRoadsColor(roadStatusSide, 'blue','辅路');
-            this.collection.setRoadsColor(roadStatusUse, 'green','在用');
-            this.collection.setRoadsColor(roadStatusDisable, '#333','停用');
+            this.collection.setRoadsColor(roadStatusMain, 'green', '主路');
+            this.collection.setRoadsColor(roadStatusSide, 'blue', '辅路');
+            this.collection.setRoadsColor(roadStatusUse, 'green', '在用');
+            this.collection.setRoadsColor(roadStatusDisable, '#333', '停用');
 
         },
         bindGeometryEvent: function (shape) {
@@ -227,7 +227,7 @@ $(document).ready(function () {
             };
             shape.overFun = function (shape, e) {
 
-               // console.log('准备弹出图层')
+                // console.log('准备弹出图层')
                 clearTimeout(mouseover_timeout);
                 mouseover_timeout = setTimeout(function () {
                     //console.log('弹出了图层')
@@ -276,7 +276,7 @@ $(document).ready(function () {
                 this.bubblePanel.hide();
             }
         },
-        showModal: function(a) {
+        showModal: function (a) {
             console.log(a);
             if (a.facilityType == "FACILITY_CREATETEXT") {
                 var technologyUrl = rootPath + 'technologyActionRecord/getDetail.do?';
@@ -293,16 +293,16 @@ $(document).ready(function () {
                     contentType: 'application/json;charset=utf-8',
                     data: JSON.stringify(data),
                     dataType: 'json',
-                    success: function(res) {
-                        if(res.data!=null){
-                            var objectId=res.data.oid;
+                    success: function (res) {
+                        if (res.data != null) {
+                            var objectId = res.data.oid;
                             var url = rootPath + 'system/technology/technology_record_view.html?code=' + objectId;
                             baseShow(objectId + "_view", "工艺基本信息详情", url, 900, 600);
-                        }else{
+                        } else {
                             baseMsg("当前工艺无数据");
                         }
                     },
-                    error: function() {
+                    error: function () {
                         console.log('请求失败');
                     }
                 });
@@ -321,18 +321,18 @@ $(document).ready(function () {
                     contentType: 'application/json;charset=utf-8',
                     data: JSON.stringify(data),
                     dataType: 'json',
-                    success: function(res) {
+                    success: function (res) {
                         console.log(res);
-                        if(res.data!=null){
+                        if (res.data != null) {
                             var objectId = res.data.oid;
                             console.log(objectId);
                             var url = rootPath + 'system/device/devicecard/device_card_view.html?oid=' + objectId;
                             baseShow(objectId + "_view", '设备信息详情', url, 1000, 650);
-                        }else{
+                        } else {
                             baseMsg("当前设备无数据");
                         }
                     },
-                    error: function() {
+                    error: function () {
                         console.log('请求失败');
                     }
                 });
@@ -403,11 +403,12 @@ $(document).ready(function () {
         locateAreaByPointsList: function (aPonits) { // [{x,y}]
             this.collection.locateArea(aPonits);
         },
-        openCreateMarkerMode: function (url, width, height) {
+        openCreateMarkerMode: function (callback,url, width, height) {
             this.isCreateMarkerMode = true;
             this.marker.url = url || '';
             this.marker.width = width || 30;
             this.marker.height = height || 30;
+            this.marker.callback = callback || null;
         },
         closeCreateMarkerMode: function () {
             this.isCreateMarkerMode = false;
@@ -421,10 +422,13 @@ $(document).ready(function () {
             }
             this.closeCreateMarkerMode();
             //            console.log('当前坐标点位:', x, y)
-            return {
+            var re = {
                 x: x,
                 y: y
-            }
+            };
+
+            this.marker.callback && this.marker.callback(re);
+            return re;
         },
         showOrHideBitNumber: function (isShow) {
             this.collection.shapeList.forEach(function (shape) {
@@ -469,7 +473,8 @@ $(document).ready(function () {
             addworkBtn: "#doneadd",
             switchBtn: "#process_change",
             technicBtn: "#technology_record",
-            bitShowBtn: ".bitShowBtn"
+            bitShowBtn: ".bitShowBtn",
+            refresh:'#refresh'
         },
         init: function () {
             this.initElem();
@@ -535,7 +540,9 @@ $(document).ready(function () {
             this.technicBtn.on('click', function () { //
                 that.changeTechnic();
             });
-
+            this.refresh.on('click', function () { //
+            	drawSvgObj.changeState();
+            });
         },
         bindEvent_DateTimePicker() {
             if ($.datetimepicker) {
@@ -656,15 +663,15 @@ $(document).ready(function () {
             var res = res;
             var abnormalArr = res.data.result;
             var arrClose = [];
-            var arrOpen=[];
-            var arr=[];
-            var alarmObjs=[];
+            var arrOpen = [];
+            var arr = [];
+            var alarmObjs = [];
 
             for (i = 0; i < abnormalArr.length; i++) {
-                if(abnormalArr[i].changeStatus=="关"&&abnormalArr[i].deviceSteadyState==0){
-                	arrClose.push(abnormalArr[i].deviceLocationNo);
-                }else if(abnormalArr[i].changeStatus=="开"&&abnormalArr[i].deviceSteadyState==1){
-                	arrOpen.push(abnormalArr[i].deviceLocationNo);
+                if (abnormalArr[i].changeStatus == "关" && abnormalArr[i].deviceSteadyState == 0) {
+                    arrClose.push(abnormalArr[i].deviceLocationNo);
+                } else if (abnormalArr[i].changeStatus == "开" && abnormalArr[i].deviceSteadyState == 1) {
+                    arrOpen.push(abnormalArr[i].deviceLocationNo);
                 }
                 arr.push(abnormalArr[i].deviceLocationNo);
             };
@@ -677,8 +684,8 @@ $(document).ready(function () {
                     } else {
                         drawSvgObj.collection.locateShapes(arr);
 
-                        drawSvgObj.collection.setTwinkleByBitNumberList(arrClose,'yellow',null,null,true);
-                        drawSvgObj.collection.setTwinkleByBitNumberList(arrOpen,'red',null,null,true);
+                        drawSvgObj.collection.setTwinkleByBitNumberList(arrClose, 'red', null, null, true);
+                        drawSvgObj.collection.setTwinkleByBitNumberList(arrOpen, 'yellow', null, null, true);
 
                         this.isWarning = true;
                     }
@@ -689,29 +696,29 @@ $(document).ready(function () {
                 baseMsg("当前无PID图");
             }
         },
-        createWorkList: function () {//发起工单
+        createWorkList: function () { //发起工单
             var numLength = drawSvgObj.selectedShapeList.length;
             if (drawSvgObj.isHasData) {
                 if (drawSvgObj.isLoaded) {
                     if (numLength != 0) {
-                        var type=drawSvgObj.selectedShapeList[0].facilityType;
-                        if(type=="FACILITY_CREATETEXT"){
+                        var type = drawSvgObj.selectedShapeList[0].facilityType;
+                        if (type == "FACILITY_CREATETEXT") {
                             baseMsg("请选择元件");
-                        }else{
-                            var arr=drawSvgObj.selectedShapeList;
+                        } else {
+                            var arr = drawSvgObj.selectedShapeList;
                             var Oid = localStorage.getItem("stationOid");
-                            var arrString=[];
-                            for(var i=0;i<arr.length;i++){
-                                if(arr[i].bitNumber){
+                            var arrString = [];
+                            for (var i = 0; i < arr.length; i++) {
+                                if (arr[i].bitNumber) {
                                     arrString.push(arr[i].bitNumber);
                                 }
                             }
-                            var string=arrString.join();//将位号转化为字符串
+                            var string = arrString.join(); //将位号转化为字符串
                             var url = 'system/workflow/workflow_done_add.html?stationId=' + Oid + "&deviceLocationNos=" + string;
                             baseDialog(uuid(8), "新增工单信息", url, 900, 500, ['发起', '取消'], ['saveData()']);
                         }
 
-                    }else {
+                    } else {
                         baseMsg("请选择元件");
                     }
                 } else {
@@ -730,14 +737,14 @@ $(document).ready(function () {
                     } else if (numLength != 1) {
                         baseMsg("只能选择一个元件");
                     } else {
-                    	var type=drawSvgObj.selectedShapeList[0].facilityType;
+                        var type = drawSvgObj.selectedShapeList[0].facilityType;
                         var bitNumber = drawSvgObj.selectedShapeList[0].bitNumber;
                         var Oid = localStorage.getItem("stationOid")
                         var url = 'system/device/processchange/process_change_add_edit.html?stationId=' + Oid + "&bitNumber=" + bitNumber;
                         if (bitNumber != null && bitNumber != '' && bitNumber != 'undefined') {
                             baseDialog(uuid(8), "阀门开关", url, 900, 600, ['发起', '取消'], ['saveData()']);
-                        }else if(type=="FACILITY_CREATETEXT"){
-                        	baseMsg("请选择元件");
+                        } else if (type == "FACILITY_CREATETEXT") {
+                            baseMsg("请选择元件");
                         } else {
                             baseMsg("该元件没有位号");
                         }
@@ -749,24 +756,24 @@ $(document).ready(function () {
                 baseMsg("当前无PID图");
             }
         },
-        changeTechnic: function () {//工艺转换
-        	var numLength = drawSvgObj.selectedShapeList.length;
+        changeTechnic: function () { //工艺转换
+            var numLength = drawSvgObj.selectedShapeList.length;
             if (drawSvgObj.isHasData) {
-            	if (drawSvgObj.isLoaded) {
-            		if (numLength != 0) {
-	                    var type=drawSvgObj.selectedShapeList[0].facilityType;
-	            		if(type=="FACILITY_CREATETEXT"){
-	            			var bitNumber = drawSvgObj.selectedShapeList[0].bitNumber;
-	            		    var Oid = localStorage.getItem("stationOid");
-	            		    var groupName = drawSvgObj.selectedShapeList[0].main_realtext;
-	            		    var url = 'system/technology/technology_record_edit.html?stationId=' + Oid + "&groupName=" + encodeURI(groupName);
-	            		    baseDialog(uuid(8), "工艺转换", url, 900, 500, ['发起', '取消'], ['saveData()']);
-	            		}else{
-	            			baseMsg("请选择工艺系统");
-	            		}
-            		}else{
-            			baseMsg("请选择工艺系统");
-            		}
+                if (drawSvgObj.isLoaded) {
+                    if (numLength != 0) {
+                        var type = drawSvgObj.selectedShapeList[0].facilityType;
+                        if (type == "FACILITY_CREATETEXT") {
+                            var bitNumber = drawSvgObj.selectedShapeList[0].bitNumber;
+                            var Oid = localStorage.getItem("stationOid");
+                            var groupName = drawSvgObj.selectedShapeList[0].main_realtext;
+                            var url = 'system/technology/technology_record_edit.html?stationId=' + Oid + "&groupName=" + encodeURI(groupName);
+                            baseDialog(uuid(8), "工艺转换", url, 900, 500, ['发起', '取消'], ['saveData()']);
+                        } else {
+                            baseMsg("请选择工艺系统");
+                        }
+                    } else {
+                        baseMsg("请选择工艺系统");
+                    }
                 } else {
                     baseMsg("加载中，请稍后操作。。。");
                 }

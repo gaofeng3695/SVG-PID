@@ -34,6 +34,7 @@
             this.height = obj.height ? obj.height : this.height;
             this.selectRectFn = obj.selectRectFn;
             this.dragingRectFn = obj.dragingRectFn;
+            this.dragingRectUpFn = obj.dragingRectUpFn;
             this.initSvgPaper();
             this.bindEvent();
         },
@@ -199,6 +200,7 @@
                             _dx = _dy = 0;
                             e.stopPropagation();
                         },function( e){
+                            that.dragingRectUpFn && that.dragingRectUpFn();
                             e.stopPropagation();
                         });
                     }

@@ -179,6 +179,7 @@
         this.raphael = null;
         this.shapeCollection = null;
         this.raphaelScreen = null;
+        this.history = null;
 
         this.createShape = function () {};
         this.moveTo = function () {};
@@ -906,6 +907,11 @@
             if (_this.canMove) {
                 if (hasMove && _this.upFun) {
                     _this.upFun(_this);
+
+                } else if (hasMove) {
+                    if (_this.history) {
+                        _this.history.save();
+                    }
                 }
             }
             if (hasMove == false && _this.clickFun) {
@@ -1009,6 +1015,7 @@
             this.bShape.x = this.bx;
             this.bShape.y = this.by;
             this.bShape.raphaelScreen = this.raphaelScreen;
+            this.bShape.history = this.history;
             this.bShape.hasExtent = false;
             this.bShape.raphael = this.raphael;
             this.bShape.width = this.pointSize;
@@ -1068,6 +1075,9 @@
                 if (_this.upFun) {
                     _this.upFun(this, -1);
                 }
+                if (_this.history) {
+                    _this.history.save();
+                }
             };
             this.bShape.clickFun = shapeClick;
             this.bShape.createShape();
@@ -1080,6 +1090,7 @@
             this.eShape.hasExtent = false;
             this.eShape.raphael = this.raphael;
             this.eShape.raphaelScreen = this.raphaelScreen;
+            this.eShape.history = this.history;
             this.eShape.width = this.pointSize;
             this.eShape.height = this.pointSize;
             this.eShape.border = 1;
@@ -1132,8 +1143,12 @@
                     shapeBean.addLine(_this);
                     shapeBean.unSelect().hideConnectPoints();
                 }
+
                 if (_this.upFun) {
                     _this.upFun(this, -1);
+                }
+                if (_this.history) {
+                    _this.history.save();
                 }
             };
             this.eShape.clickFun = shapeClick;
@@ -1150,8 +1165,8 @@
             this.bShape.y = this.by;
             this.eShape.x = this.ex;
             this.eShape.y = this.ey;
-            this.bShape.color =  this.eShape.color = this.color;
-            this.bShape.fillColor =  this.eShape.fillColor = this.fillColor;
+            this.bShape.color = this.eShape.color = this.color;
+            this.bShape.fillColor = this.eShape.fillColor = this.fillColor;
 
             this.bShape.moveTo();
             this.eShape.moveTo();
@@ -1290,7 +1305,7 @@
             }
         };
         var shapeOver = function (shape) {
-            if(shape.canMove){
+            if (shape.canMove) {
                 shape.width = shape.width * 2;
                 shape.height = shape.height * 2;
                 shape.moveTo();
@@ -1353,6 +1368,7 @@
                 this.bShape.hasExtent = false;
                 this.bShape.raphael = this.raphael;
                 this.bShape.raphaelScreen = this.raphaelScreen;
+                this.bShape.history = this.history;
 
                 this.bShape.width = this.pointSize;
                 this.bShape.height = this.pointSize;
@@ -1406,6 +1422,9 @@
                     if (_this.upFun) {
                         _this.upFun(this, -1);
                     }
+                    if (_this.history) {
+                        _this.history.save();
+                    }
                 };
                 this.bShape.clickFun = shapeClick;
                 this.bShape.createShape();
@@ -1417,6 +1436,7 @@
                 this.mShape.hasExtent = false;
                 this.mShape.raphael = this.raphael;
                 this.mShape.raphaelScreen = this.raphaelScreen;
+                this.mShape.history = this.history;
                 this.mShape.width = this.middleWidth;
                 this.mShape.height = this.middleWidth;
                 this.mShape.border = 1;
@@ -1441,6 +1461,9 @@
                     if (_this.upFun) {
                         _this.upFun(this, 0);
                     }
+                    if (_this.history) {
+                        _this.history.save();
+                    }
                 };
                 this.mShape.clickFun = shapeClick;
                 this.mShape.createShape();
@@ -1452,6 +1475,7 @@
                 this.eShape.hasExtent = false;
                 this.eShape.raphael = this.raphael;
                 this.eShape.raphaelScreen = this.raphaelScreen;
+                this.eShape.history = this.history;
                 this.eShape.width = this.pointSize;
                 this.eShape.height = this.pointSize;
                 this.eShape.border = 1;
@@ -1504,6 +1528,9 @@
                     if (_this.upFun) {
                         _this.upFun(this, -1);
                     }
+                    if (_this.history) {
+                        _this.history.save();
+                    }
                 };
                 this.eShape.clickFun = shapeClick;
                 this.eShape.createShape();
@@ -1527,8 +1554,8 @@
             this.mShape.y = this.cy;
             this.eShape.x = this.ex;
             this.eShape.y = this.ey;
-            this.bShape.color =  this.eShape.color = this.mShape.color = this.color;
-            this.bShape.fillColor =  this.eShape.fillColor = this.mShape.fillColor = this.fillColor;
+            this.bShape.color = this.eShape.color = this.mShape.color = this.color;
+            this.bShape.fillColor = this.eShape.fillColor = this.mShape.fillColor = this.fillColor;
 
             this.bShape.moveTo();
             this.mShape.moveTo();
@@ -1587,7 +1614,7 @@
             }
         };
         var shapeOver = function (shape) {
-            if(_this.canMove){
+            if (_this.canMove) {
                 shape.width = shape.width * 2;
                 shape.height = shape.height * 2;
                 shape.moveTo();
@@ -1743,6 +1770,10 @@
             if (_this.canMove) {
                 if (hasMove && _this.upFun) {
                     _this.upFun(_this);
+                } else if (hasMove) {
+                    if (_this.history) {
+                        _this.history.save();
+                    }
                 }
             }
             if (hasMove == false && _this.clickFun) {
@@ -1900,13 +1931,150 @@
 
     //*******************************************************************************************************************************************
 
-    // 历史记录
-    // HistoryBean = function () {
-    //     var _this = this;
-    //     this.type = '';
-    //     this.datetime = new Date();
-    //     this.actions = [];
-    // };
+    //历史记录
+
+
+    (function (window) {
+        window.HistoryBean = function (shapeCollection) {
+            var _this = this;
+            this.maxChange = 50;
+            this.type = '';
+            this.datetime = new Date();
+            this.aChangeList = []; //版本历史数组
+            this.aLastShapeObjs = null; //历史记录中的最新版本
+            this.index = 0; //当前图形版本位于版本历史数组中index
+            this.shapeCollection = shapeCollection;
+
+        };
+
+        HistoryBean.prototype = {
+            constructor: HistoryBean,
+            save: function () { //分析入参图形属性，找出与上次存储的不同
+                var aShapeObjs = this.shapeCollection.getGeometryAttribute();
+                var aLastShapeObjs = this.aLastShapeObjs;
+                var oChange = {
+                    add: [],
+                    delete: [],
+                    modify: [],
+                    changeTime: null,
+                };
+                if (!aLastShapeObjs ) {
+                    if(aShapeObjs.length === 0) return;
+                    oChange.changeTime = new Date();
+                    oChange.add = aShapeObjs;
+                    this.aChangeList.push(oChange);
+                    this.aLastShapeObjs = aShapeObjs;
+                    this.index = 0; //当前图形版本位于版本历史数组中index
+                } else {
+                    var oshapeID = {};
+                    aLastShapeObjs.forEach(function (shape) {
+                        oshapeID[shape.id] = 1;
+                    });
+                    aShapeObjs.forEach(function (shape) {
+                        var id = shape.id;
+                        if (oshapeID[id] === 1) {
+                            oshapeID[id]++; // 2 依然存在的
+                        } else {
+                            oshapeID[id] = 0; //0 增加的
+                        } // 1 被删除的
+                    });
+                    for (var id in oshapeID) {
+                        var lastShape = this._getItemById(aLastShapeObjs, id);
+
+                        var nowShape = this._getItemById(aShapeObjs, id);
+                        // console.log('lastShape  ',lastShape)
+                        // console.log('nowShape  ',nowShape)
+                        var code = oshapeID[id];
+                        if (code === 1) {
+                            lastShape && oChange.delete.push(lastShape);
+                        } else if (code === 0) {
+                            nowShape && oChange.add.push(nowShape);
+                        } else {
+                            if (JSON.stringify(lastShape) !== JSON.stringify(nowShape)) {
+                                nowShape && oChange.modify.push([lastShape, nowShape]);
+                            }
+                        }
+                    }
+
+                    if ((oChange.add.length + oChange.delete.length + oChange.modify.length) > 0) {
+
+                        //console.log('idnex: ', this.index);
+                        oChange.changeTime = new Date();
+                        this.aLastShapeObjs = aShapeObjs;
+
+                        if( this.index === (this.maxChange - 1)){
+                            this.aChangeList = this.aChangeList.slice(1).concat(oChange);
+                        }else{
+                            this.index++;
+                            this.aChangeList = this.aChangeList.slice(0, this.index).concat(oChange);
+                        }
+                        //console.log('this.aChangeList: ', this.aChangeList);
+                    }
+                }
+            },
+            back: function (finishedfn) {
+                if (this.index < 0) return;
+                var oChange = this.aChangeList[this.index];
+
+                var addShapes = oChange.delete;
+                var deleteShapes = oChange.add;
+                var modifyShapes = oChange.modify.map(function (item) {
+                    return item[0];
+                });
+
+                this._changeTheSvg(addShapes, deleteShapes, modifyShapes, true, finishedfn);
+            },
+            next: function (finishedfn) {
+                if (!this.aChangeList[this.index + 1]) return;
+                var oChange = this.aChangeList[this.index + 1];
+
+                var addShapes = oChange.add;
+                var deleteShapes = oChange.delete;
+                var modifyShapes = oChange.modify.map(function (item) {
+                    return item[1];
+                });
+                this._changeTheSvg(addShapes, deleteShapes, modifyShapes, false, finishedfn);
+            },
+            _changeTheSvg: function (addShapes, deleteShapes, modifyShapes, isBack, finishedfn) {
+
+                var that = this;
+                var isChanged = false;
+
+                addShapes.concat(deleteShapes).concat(modifyShapes).forEach(function (shape) {
+                    var shapeInst = that.shapeCollection.getGeometryById(shape.id);
+                    if (shapeInst) {
+                        shapeInst.remove();
+                        isChanged = true;
+                    }
+                });
+
+                var aShapesToBeAdded = modifyShapes.concat(addShapes);
+                if (aShapesToBeAdded.length > 0) {
+                    isChanged = true;
+                    this.shapeCollection.createGeometrys(aShapesToBeAdded, function (aShapes) {
+                        if (isChanged) {
+                            that.index = isBack ? that.index - 1 : that.index + 1;
+                            that.aLastShapeObjs = that.shapeCollection.getGeometryAttribute();
+                        }
+                        finishedfn && finishedfn(aShapes);
+                    });
+                } else if (isChanged) {
+                    this.index = isBack ? this.index - 1 : this.index + 1;
+                    this.aLastShapeObjs = this.shapeCollection.getGeometryAttribute();
+                }
+            },
+            _getItemById: function (arr, id) {
+                for (var a = 0; a < arr.length; a++) {
+                    var shape = arr[a];
+                    if (shape.id === id) return shape;
+                }
+                return '';
+            },
+        }
+    })(window);
+
+
+
 
 
 })();

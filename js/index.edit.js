@@ -2,8 +2,13 @@ $(document).ready(function () {
     editSvgObj.init();
     dragIocnObj.init(editSvgObj);
     topToolsObj.init(editSvgObj);
+    attrObj.init(editSvgObj); //初始化属性编辑
+
     stationPid.init();
 });
+
+
+
 
 /*
  * creeated by DX on 2017.12.12 针对业务相关对象
@@ -129,7 +134,7 @@ $(document).ready(function () {
 /*
  * * creeated by GF on 2017.12.04 * svg画布操作对象
  */
-(function (window, Raphael, $, RaphaelScreen, attrObj) {
+(function (window, Raphael, $, RaphaelScreen, HistoryBean, attrObj) {
     // creeated by GF on 2017.11.28
     window.editSvgObj = {
         raphael: null, // svg的raphael实例
@@ -140,7 +145,6 @@ $(document).ready(function () {
 
         init: function () {
             this.initRaphael();
-
             // $.ajax({
             //     url: "data/" + 'cccc' + ".json",
             //     method: "get",
@@ -160,11 +164,17 @@ $(document).ready(function () {
                 'height': 10000,
                 'collection': this.collection,
                 'selectRectFn': this.selectShapeByRect.bind(this),
-                'dragingRectFn': this.moveShapes.bind(this)
+                'dragingRectFn': this.moveShapes.bind(this),
+                'dragingRectUpFn': function () {
+                    that.history.save();
+                }
             });
             this.collection = new ShapeCollection(this.raphaelScreen);
 
             this.raphael = this.raphaelScreen.raphael;
+            this.history = new HistoryBean(this.collection);
+
+            this.collection.history = this.history;
             // this.requestData();
             // this.raphaelScreen.setViewBox(0, 0, 2000, 2000);
             // this.raphaelScreen.setViewBox(400, 800, 800, 1400);
@@ -253,7 +263,7 @@ $(document).ready(function () {
             });
         },
     }
-})(window, Raphael, $, RaphaelScreen, attrObj);
+})(window, Raphael, $, RaphaelScreen, HistoryBean, attrObj);
 
 /*
  * * 作者：creeated by GF on 2017.12.07 * 模块：生成图形模块，拖拽icon生成图形 * 依赖 ：ShapeConfig,
@@ -346,6 +356,7 @@ $(document).ready(function () {
                 }
                 that.currentEdit = true;
                 that.editSvgObj.bindShapeEvent(shape);
+                that.editSvgObj.history.save();
             });
         },
         renderImgIcons: function () {
@@ -427,7 +438,7 @@ $(document).ready(function () {
 /**
  * 作者：creeated by GF on 2017.11.28 模块：顶部工具栏对象 依赖：window, $ 入参：editSvgObj
  */
-(function (window, $) {
+(function (window, $, attrObj) {
     window.topToolsObj = {
         elem: {
             stateIcon: '.stateIcon',
@@ -443,7 +454,10 @@ $(document).ready(function () {
             copyBtn: '.copyBtn',
             addPointBtn: '.addPointBtn',
             saveas: '.saveas',
-            publish: '.publish'
+            publish: '.publish',
+            backBtn: '.backBtn',
+            nextBtn: '.nextBtn',
+
         },
         init: function (editSvgObj) {
             this.editSvgObj = editSvgObj;
@@ -496,17 +510,45 @@ $(document).ready(function () {
                 that.rotateShape(shapeInsts, angle);
             });
 
+            this.backBtn.on('click', function (e) { //
+                that.editSvgObj.history.back(function (aShapeList) {
+                    aShapeList.forEach(function (shape) {
+                        that.editSvgObj.bindShapeEvent(shape);
+                    });
+                    attrObj && attrObj.hiddenAttrPanel();
+                });
+            });
+
+            this.nextBtn.on('click', function (e) { //
+                that.editSvgObj.history.next(function (aShapeList) {
+                    aShapeList.forEach(function (shape) {
+                        that.editSvgObj.bindShapeEvent(shape);
+                    });
+                    attrObj && attrObj.hiddenAttrPanel();
+                });
+            });
+
+
             $(window).on('keydown', function (e) { // delete 删除图形
                 if (e.key !== 'Delete')
                     return;
                 var shapeInsts = that.editSvgObj.collection.getSelectShape();
                 var length = shapeInsts.length;
                 if (length > 0) {
-                    baseConfirm("提示", '确定删除所选的 ' + length + ' 个图形？', function () {
+                    try {
+                        baseConfirm("提示", '确定删除所选的 ' + length + ' 个图形？', function () {
+                            shapeInsts.forEach(function (shape) {
+                                shape.remove();
+                            });
+                            this.editSvgObj.history.save();
+                        });
+                    } catch (e) {
                         shapeInsts.forEach(function (shape) {
                             shape.remove();
                         });
-                    });
+                        this.editSvgObj.history.save();
+                    }
+
                 }
             });
         },
@@ -567,20 +609,18 @@ $(document).ready(function () {
                 }
             });
             this.editSvgObj.raphaelScreen.$svgWrap.on('click', function (e) {
-                if (that.editSvgObj.raphaelScreen.state !== 'addPoint' ||
-                    e.button !== 0)
-                    return;
+                if (that.editSvgObj.raphaelScreen.state !== 'addPoint' || e.button !== 0) return;
 
-                var oloc = that.editSvgObj.raphaelScreen.getSvgCoordinate(
-                    e.pageX, e.pageY);
+                var oloc = that.editSvgObj.raphaelScreen.getSvgCoordinate(e.pageX, e.pageY);
                 var x = oloc.x;
                 var y = oloc.y;
                 var shape = that.editSvgObj.collection.getShapeByLocat(x, y);
-                if (!shape)
-                    return;
+                if (!shape) return;
                 shape.addConnectPoint(x, y);
+                that.editSvgObj.history.save();
                 shape.hideConnectPoints();
                 shape.showConnectPoints();
+
             });
         },
         bindEvent_copyPaste: function () {
@@ -614,6 +654,7 @@ $(document).ready(function () {
                     aShapeList.forEach(function (shape) {
                         that.editSvgObj.bindShapeEvent(shape);
                     });
+                    that.editSvgObj.history.save();
                 });
                 that.editSvgObj.raphaelScreen.setState();
                 oCopy = null;
@@ -680,6 +721,7 @@ $(document).ready(function () {
                     }
                 }
             }
+            this.editSvgObj.history.save();
         },
         rotateShape: function (aShapeInst, angle) {
             var list = aShapeInst;
@@ -687,6 +729,7 @@ $(document).ready(function () {
                 if (shape.rotate)
                     shape.rotate(angle);
             });
+            this.editSvgObj.history.save();
         },
         saveAsImage: function () { // facilityConfig
             var svgXml = $('#jas_raphael').html();
@@ -860,4 +903,4 @@ $(document).ready(function () {
             });
         }
     }
-})(window, $);
+})(window, $, attrObj);
