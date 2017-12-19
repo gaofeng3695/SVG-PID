@@ -319,7 +319,7 @@
         'FACILITY_FST': { //26
             name: '放散塔',
             facilityType: 'FACILITY_FST',
-            geometryType: 'GEOMETRY_POLYLINE',
+            geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape26_001.svg',
             iconWidth: 25,
             iconHeight: 87,

@@ -303,7 +303,6 @@
             }
             return this;
         };
-
         this.panTo = function (x, y) {
             this.x += x;
             this.y += y;
@@ -393,6 +392,19 @@
             this.extent2.hide();
             this.isextent2show = false;
         };
+        this.setBackColor = function (sColor, isShow) { //设定背景颜色,默认 透明色，不显示
+            if (!sColor && (!this._origin_bgcolor || this._origin_bgcolor === 'none')) return;
+
+            this._origin_bgcolor = sColor || 'none';
+            this._origin_isextent2showr = isShow || false;
+            this.bgcolor = sColor;
+            if (isShow) {
+                this.showExtent2();
+            } else {
+                this.hideExtent2();
+            }
+            this.moveTo();
+        };
         this.setTwinkle = function (color, nAllTime, nEachTime) { // 设置闪烁,入参闪烁颜色(默认红色)，闪烁总时长（默认无限），闪烁间隔（默认800毫秒）
 
             var that = this;
@@ -431,6 +443,15 @@
                 }
                 this.extent2.hide();
                 this.isextent2show = false;
+            }
+            if (this._origin_bgcolor) {
+                this.bgcolor = this._origin_bgcolor;
+            }
+            this.moveTo();
+            if (this._origin_isextent2showr) {
+                this.showExtent2();
+            } else {
+                this.hideExtent2();
             }
         };
         this.cloneAttribute = function () {
@@ -1935,15 +1956,25 @@
 
 
     (function (window) {
-        window.HistoryBean = function (shapeCollection) {
+        window.HistoryBean = function (obj) {
+            // obj = {
+            //     shapeCollection : shapeCollection,
+            //     cb_changed : function(){},
+            //     cb_save : function(){},
+            //     cb_back : function(){},
+            //     cb_next : function(){},
+            // };
             var _this = this;
             this.maxChange = 50;
             this.type = '';
             this.datetime = new Date();
             this.aChangeList = []; //版本历史数组
-            this.aLastShapeObjs = null; //历史记录中的最新版本
-            this.index = 0; //当前图形版本位于版本历史数组中index
-            this.shapeCollection = shapeCollection;
+            this.aLastShapeObjs = []; //历史记录中的最新版本
+            this.index = -1; //当前图形版本位于版本历史数组中index
+
+            this.shapeCollection = obj.shapeCollection;
+            this.cb_save = obj.cb_save;
+            this.cb_changed = obj.cb_changed;
 
         };
 
@@ -1952,19 +1983,22 @@
             save: function () { //分析入参图形属性，找出与上次存储的不同
                 var aShapeObjs = this.shapeCollection.getGeometryAttribute();
                 var aLastShapeObjs = this.aLastShapeObjs;
+                // console.log('aShapeObjs',aShapeObjs)
+                // console.log('aLastShapeObjs',aLastShapeObjs)
                 var oChange = {
                     add: [],
                     delete: [],
                     modify: [],
                     changeTime: null,
                 };
-                if (!aLastShapeObjs ) {
-                    if(aShapeObjs.length === 0) return;
+                if (aLastShapeObjs.length === 0) {
+                    if (aShapeObjs.length === 0) return;
                     oChange.changeTime = new Date();
                     oChange.add = aShapeObjs;
                     this.aChangeList.push(oChange);
                     this.aLastShapeObjs = aShapeObjs;
                     this.index = 0; //当前图形版本位于版本历史数组中index
+                    this.cb_changed && this.cb_changed(this.index,this.aChangeList);
                 } else {
                     var oshapeID = {};
                     aLastShapeObjs.forEach(function (shape) {
@@ -1982,8 +2016,7 @@
                         var lastShape = this._getItemById(aLastShapeObjs, id);
 
                         var nowShape = this._getItemById(aShapeObjs, id);
-                        // console.log('lastShape  ',lastShape)
-                        // console.log('nowShape  ',nowShape)
+
                         var code = oshapeID[id];
                         if (code === 1) {
                             lastShape && oChange.delete.push(lastShape);
@@ -1991,6 +2024,8 @@
                             nowShape && oChange.add.push(nowShape);
                         } else {
                             if (JSON.stringify(lastShape) !== JSON.stringify(nowShape)) {
+                                // console.log('lastShape  ', lastShape.customJoinPoint)
+                                // console.log('nowShape  ', nowShape.customJoinPoint)
                                 nowShape && oChange.modify.push([lastShape, nowShape]);
                             }
                         }
@@ -2000,17 +2035,20 @@
 
                         //console.log('idnex: ', this.index);
                         oChange.changeTime = new Date();
-                        this.aLastShapeObjs = aShapeObjs;
+                        this.aLastShapeObjs = JSON.parse(JSON.stringify(aShapeObjs));
 
-                        if( this.index === (this.maxChange - 1)){
+                        if (this.index === (this.maxChange - 1)) {
                             this.aChangeList = this.aChangeList.slice(1).concat(oChange);
-                        }else{
+                        } else {
                             this.index++;
                             this.aChangeList = this.aChangeList.slice(0, this.index).concat(oChange);
                         }
+                        this.cb_changed && this.cb_changed(this.index,this.aChangeList);
+
                         //console.log('this.aChangeList: ', this.aChangeList);
                     }
                 }
+                this.cb_save && this.cb_save();
             },
             back: function (finishedfn) {
                 if (this.index < 0) return;
@@ -2055,13 +2093,17 @@
                         if (isChanged) {
                             that.index = isBack ? that.index - 1 : that.index + 1;
                             that.aLastShapeObjs = that.shapeCollection.getGeometryAttribute();
+                            that.cb_changed && that.cb_changed(that.index,that.aChangeList);
                         }
                         finishedfn && finishedfn(aShapes);
                     });
                 } else if (isChanged) {
                     this.index = isBack ? this.index - 1 : this.index + 1;
                     this.aLastShapeObjs = this.shapeCollection.getGeometryAttribute();
+                    this.cb_changed && this.cb_changed(this.index,this.aChangeList);
                 }
+
+
             },
             _getItemById: function (arr, id) {
                 for (var a = 0; a < arr.length; a++) {

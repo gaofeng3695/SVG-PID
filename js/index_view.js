@@ -149,11 +149,20 @@ $(document).ready(function () {
             var roadStatusUse = []; //在用状态下的路的名称
             var roadStatusDisable = []; //停用状态下的路的名称
             var roadStatusNull = []; //空状态下的路的名称
+            var processChange = []; //最新阀门变动当天阀门变动过的位号
             $.ajax({
                 url: url,
                 method: "post",
                 async: false,
                 success: function (res) {
+
+                    console.log(res)
+
+                	if (res.data.processChange && res.data.processChange.length > 0) {
+                		for (var i=0; i<res.data.processChange.length; i++) {
+                			processChange.push(res.data.processChange[i]["deviceLocationNo"]);
+                		}
+                	}
                     for (var i = 0; i < res.data.device.length; i++) {
                         var tapStatus = res.data.device[i].tapStatus;
                         if (tapStatus == '关') {
@@ -179,20 +188,44 @@ $(document).ready(function () {
                     console.log('请求失败');
                 }
             });
-            console.log('roadStatusMain：', roadStatusMain);
-            console.log('roadStatusSide：', roadStatusSide);
-            console.log('roadStatusUse：', roadStatusUse);
-            console.log('roadStatusDisable：', roadStatusDisable);
-            console.log('roadStatusNull：', roadStatusNull);
-            console.log('ValveClosing：', ValveClosing);
+            // console.log('roadStatusMain：', roadStatusMain);
+            // console.log('roadStatusSide：', roadStatusSide);
+            // console.log('roadStatusUse：', roadStatusUse);
+            // console.log('roadStatusDisable：', roadStatusDisable);
+            // console.log('roadStatusNull：', roadStatusNull);
+            // console.log('ValveClosing：', ValveClosing);
+            // console.log('processChange：', processChange);
 
-            this.collection.setShapeStateByBitNumberList('002', ValveClosing);
+            // this.setTapClosed(ValveClosing);
+            // this.setTapBackGround(processChange);
 
-            this.collection.setRoadsColor(roadStatusMain, 'green', '主路');
-            this.collection.setRoadsColor(roadStatusSide, 'blue', '辅路');
-            this.collection.setRoadsColor(roadStatusUse, 'green', '在用');
-            this.collection.setRoadsColor(roadStatusDisable, '#333', '停用');
+            // this.collection.setRoadsColor(roadStatusMain, 'green', '主路');
+            // this.collection.setRoadsColor(roadStatusSide, 'blue', '辅路');
+            // this.collection.setRoadsColor(roadStatusUse, 'green', '在用');
+            // this.collection.setRoadsColor(roadStatusDisable, '#333', '停用');
 
+        },
+        setTapClosed: function(arr) {
+        	var shapeList = this.collection.shapeList;
+        	shapeList.forEach(function(item){
+        		if (item.state == '002'){
+        			item.setState('001');
+        		}
+        	});
+        	this.collection.setShapeStateByBitNumberList('002', arr);
+        },
+        setTapBackGround: function(arr) {
+        	var that = this;
+        	var shapeList = this.collection.shapeList;
+        	shapeList.forEach(function(item){
+        		item.setBackColor();
+        	});
+        	arr.forEach(function (item, index) {
+        		var shape = that.collection.getGeometryByBitNumber(item);
+                if (shape) {
+                    shape.setBackColor("yellow", true);
+                }
+        	});
         },
         bindGeometryEvent: function (shape) {
             var that = this;
@@ -404,6 +437,12 @@ $(document).ready(function () {
             this.collection.locateArea(aPonits);
         },
         openCreateMarkerMode: function (callback,url, width, height) {
+            // 地图选点
+            // 返回值 ：无
+            // 入参 ： [callback] ： 选点成功后的回调函数，默认参数为坐标点，例：{x: 756, y: 541}
+            // 入参 ： [url] ： 图片url
+            // 入参 ： [width] ： 图片width
+            // 入参 ： [height] ： 图片height
             this.isCreateMarkerMode = true;
             this.marker.url = url || '';
             this.marker.width = width || 30;

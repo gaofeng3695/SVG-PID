@@ -172,12 +172,24 @@ $(document).ready(function () {
             this.collection = new ShapeCollection(this.raphaelScreen);
 
             this.raphael = this.raphaelScreen.raphael;
-            this.history = new HistoryBean(this.collection);
 
-            this.collection.history = this.history;
+            this.initHistory();
             // this.requestData();
             // this.raphaelScreen.setViewBox(0, 0, 2000, 2000);
             // this.raphaelScreen.setViewBox(400, 800, 800, 1400);
+        },
+        initHistory: function (collectionInst) {
+            var that = this;
+            if (this.history) return;
+            this.history = new HistoryBean({
+                shapeCollection : this.collection,
+                cb_changed : function(index,aChanges){
+
+                    topToolsObj.renderHistoryBtnStyle(aChanges[index],aChanges[index + 1]);
+
+                }
+            });
+            this.collection.history = this.history;
         },
         bindShapeEvent: function (shape) {
             var that = this;
@@ -457,12 +469,15 @@ $(document).ready(function () {
             publish: '.publish',
             backBtn: '.backBtn',
             nextBtn: '.nextBtn',
+            backBtn2: '.backBtn2',
+            nextBtn2: '.nextBtn2',
 
         },
         init: function (editSvgObj) {
             this.editSvgObj = editSvgObj;
             this.initElem();
             this.bindEvent();
+            this.renderHistoryBtnStyle(0,0);
         },
         initElem: function () {
             var eles = this.elem;
@@ -510,7 +525,7 @@ $(document).ready(function () {
                 that.rotateShape(shapeInsts, angle);
             });
 
-            this.backBtn.on('click', function (e) { //
+            this.backBtn.on('click', function (e) { //后退
                 that.editSvgObj.history.back(function (aShapeList) {
                     aShapeList.forEach(function (shape) {
                         that.editSvgObj.bindShapeEvent(shape);
@@ -519,7 +534,7 @@ $(document).ready(function () {
                 });
             });
 
-            this.nextBtn.on('click', function (e) { //
+            this.nextBtn.on('click', function (e) { //前进
                 that.editSvgObj.history.next(function (aShapeList) {
                     aShapeList.forEach(function (shape) {
                         that.editSvgObj.bindShapeEvent(shape);
@@ -730,6 +745,23 @@ $(document).ready(function () {
                     shape.rotate(angle);
             });
             this.editSvgObj.history.save();
+        },
+        renderHistoryBtnStyle : function(canBack,canNext){
+            if(canBack){
+                this.backBtn.parent().show();
+                this.backBtn2.parent().hide();
+            }else{
+                this.backBtn.parent().hide();
+                this.backBtn2.parent().show();
+            }
+            if(canNext){
+                this.nextBtn.parent().show();
+                this.nextBtn2.parent().hide();
+            }else{
+                this.nextBtn.parent().hide();
+                this.nextBtn2.parent().show();
+            }
+
         },
         saveAsImage: function () { // facilityConfig
             var svgXml = $('#jas_raphael').html();
