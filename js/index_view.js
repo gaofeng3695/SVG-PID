@@ -45,24 +45,24 @@ $(document).ready(function () {
 
             this.bindEvent();
 
-            $.ajax({
-                url: "data/" + 'cccc' + ".json",
-                method: "get",
-                async: true,
-                success: function (res) {
-                    // var res = res.filter(function(item){
-                    //     return item.main_realtext;
-                    // });
+            // $.ajax({
+            //     url: "data/" + 'cccc' + ".json",
+            //     method: "get",
+            //     async: true,
+            //     success: function (res) {
+            //         // var res = res.filter(function(item){
+            //         //     return item.main_realtext;
+            //         // });
 
-                    that.collection.setSvgSizeByShapes(res, true); //设定画布范围
-                    that.collection.createGeometrys(res, function (aShapeList) { //渲染图形
-                        aShapeList.forEach(function (shape) {
-                            that.bindGeometryEvent(shape); //绑定图形事件
-                        });
-                        that.isLoaded = true;
-                    },true);
-                }
-            });
+            //         that.collection.setSvgSizeByShapes(res, true); //设定画布范围
+            //         that.collection.createGeometrys(res, function (aShapeList) { //渲染图形
+            //             aShapeList.forEach(function (shape) {
+            //                 that.bindGeometryEvent(shape); //绑定图形事件
+            //             });
+            //             that.isLoaded = true;
+            //         },true);
+            //     }
+            // });
 
 
         },
@@ -126,7 +126,7 @@ $(document).ready(function () {
                             that.isHasData = true; //判断是否有数据
 
                             var aShapes = JSON.parse(res.data);
-                            //                            console.log(aShapes.length)
+                            maskTip('正在绘制图形');
                             that.collection.setSvgSizeByShapes(aShapes, true); //设定画布范围
                             that.collection.createGeometrys(aShapes, function (aShapeList) { //渲染图形
                                 aShapeList.forEach(function (shape) {
@@ -134,9 +134,12 @@ $(document).ready(function () {
                                 });
                                 that.isLoaded = true;
                                 fn && fn(aShapeList);
+                                maskTip();
                             }, true);
                         }
                     }
+                },
+                complete : function(){
                 }
             });
         },
@@ -612,21 +615,24 @@ $(document).ready(function () {
             }
         },
         saveAsImage: function () { // facilityConfig
+            var that = this;
+            maskTip('正在生成图片');
+
             var aShapes = drawSvgObj.collection.shapeList;
-            if (aShapes && aShapes.length > 0) {
-                var oSize = drawSvgObj.collection.setSvgSizeByShapes(aShapes,false,true);
-            }
+            var oSize = drawSvgObj.collection.setSvgSizeByShapes(aShapes, false, true);
 
-            var width = oSize.x || 5000;
-            var height = oSize.y || 5000;
+            var width = (oSize && oSize.x) || 5000;
+            var height = (oSize && oSize.y) || 5000;
 
-            drawSvgObj.collection.getBase64SrcOfSvgImage(width,height,facilityConfig,function(base64Src){
-                var a = document.createElement('a');
-                a.href = base64Src;// 将画布内的信息导出为png图片数据
-                //console.log(a.href)
-                a.download = "工艺流程图_" + getNowDate() + '.jpg'; // 设定下载名称
-                a.click(); // 点击触发下载
-            });
+            setTimeout(function(){
+                drawSvgObj.collection.getBase64SrcOfSvgImage(width, height, facilityConfig, function (base64Src) {
+                    var a = document.createElement('a');
+                    a.href = base64Src;
+                    a.download = "工艺流程图_" + getNowDate() + '.jpg'; // 设定下载名称
+                    a.click(); // 点击触发下载
+                    maskTip();
+                });
+            },100);
 
             var getNowDate = function () {
                 // 获取当前时间字符串
@@ -642,7 +648,6 @@ $(document).ready(function () {
                 }
                 return dateTime = year + month + day;
             };
-
 
         },
         createWorkList: function () { //发起工单

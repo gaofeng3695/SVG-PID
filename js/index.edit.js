@@ -450,7 +450,7 @@ $(document).ready(function () {
 /**
  * 作者：creeated by GF on 2017.11.28 模块：顶部工具栏对象 依赖：window, $ 入参：editSvgObj
  */
-(function (window, $, attrObj) {
+(function (window, $, attrObj,maskTip) {
     window.topToolsObj = {
         elem: {
             stateIcon: '.stateIcon',
@@ -764,18 +764,24 @@ $(document).ready(function () {
 
         },
         saveAsImage: function () { // facilityConfig
+            var that = this;
+            maskTip('正在生成图片');
+
             var aShapes = this.editSvgObj.collection.shapeList;
-                var oSize = this.editSvgObj.collection.setSvgSizeByShapes(aShapes,false,true);
+            var oSize = this.editSvgObj.collection.setSvgSizeByShapes(aShapes, false, true);
 
             var width = (oSize && oSize.x) || 5000;
             var height = (oSize && oSize.y) || 5000;
 
-            this.editSvgObj.collection.getBase64SrcOfSvgImage(width,height,facilityConfig,function(base64Src){
-                var a = document.createElement('a');
-                a.href = base64Src;
-                a.download = "工艺流程图_" + getNowDate() + '.jpg'; // 设定下载名称
-                a.click(); // 点击触发下载
-            });
+            setTimeout(function(){
+                that.editSvgObj.collection.getBase64SrcOfSvgImage(width, height, facilityConfig, function (base64Src) {
+                    var a = document.createElement('a');
+                    a.href = base64Src;
+                    a.download = "工艺流程图_" + getNowDate() + '.jpg'; // 设定下载名称
+                    a.click(); // 点击触发下载
+                    maskTip();
+                });
+            },100);
 
             var getNowDate = function () {
                 // 获取当前时间字符串
@@ -877,4 +883,4 @@ $(document).ready(function () {
             });
         }
     }
-})(window, $, attrObj);
+})(window, $, attrObj,maskTip);

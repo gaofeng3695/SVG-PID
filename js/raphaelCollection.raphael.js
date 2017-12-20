@@ -5,7 +5,7 @@
  ** 依赖 ：ShapeConfig,ShapeBean,PolyLineBean,CurveLineBean,
  ** 入参 ：raphaelScreen 实例
  */
-(function (ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean,facilityConfig) {
+(function (ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean, facilityConfig) {
     // 图形之间的关系
     ShapeCollection = function (raphaelScreen) { //r参RaphaelScreen实例
         this.raphaelScreen = raphaelScreen;
@@ -158,7 +158,7 @@
                 return shape.isTwinkle;
             });
         },
-        setTwinkleByBitNumberList: function (bitNumberList, color, nAllTime, nEachTime , isNotClearTwinkle) { //入参位号id数组，闪烁背景色,设置原件闪烁
+        setTwinkleByBitNumberList: function (bitNumberList, color, nAllTime, nEachTime, isNotClearTwinkle) { //入参位号id数组，闪烁背景色,设置原件闪烁
             var that = this;
             !isNotClearTwinkle && this.clearTwinkle();
             if (!color) {
@@ -450,7 +450,7 @@
             };
             drawShape(aGeos, index);
         },
-        setSvgSizeByShapes: function (aGeos, isResizeSvg,isNotLocate) { //根据shapes获取svg的最适宜的大小
+        setSvgSizeByShapes: function (aGeos, isResizeSvg, isNotLocate) { //根据shapes获取svg的最适宜的大小
             if (!aGeos || aGeos.length < 1) {
                 return;
             }
@@ -460,17 +460,17 @@
 
             aGeos.forEach(function (shape, index, arr) {
 
-                var xArr = [shape.bx,shape.cx,shape.ex,shape.cx - shape.width/2,shape.cx + shape.width/2].filter(function(num){
+                var xArr = [shape.bx, shape.cx, shape.ex, shape.cx - shape.width / 2, shape.cx + shape.width / 2].filter(function (num) {
                     return num;
                 });
-                var yArr = [shape.by,shape.cy,shape.ey,shape.cy - shape.height/2,shape.cy + shape.height/2].filter(function(num){
+                var yArr = [shape.by, shape.cy, shape.ey, shape.cy - shape.height / 2, shape.cy + shape.height / 2].filter(function (num) {
                     return num;
                 });;
 
-                var _x = Math.min.apply(null,xArr) - 100;
-                var _y = Math.min.apply(null,yArr) - 100;
-                var x = Math.max.apply(null,xArr) + 100;
-                var y = Math.max.apply(null,yArr) + 100;
+                var _x = Math.min.apply(null, xArr) - 100;
+                var _y = Math.min.apply(null, yArr) - 100;
+                var x = Math.max.apply(null, xArr) + 100;
+                var y = Math.max.apply(null, yArr) + 100;
 
                 _x = _x < 0 ? 0 : _x;
                 _y = _y < 0 ? 0 : _y;
@@ -490,7 +490,7 @@
             var xArr = resetxy(x0, x1);
             var yArr = resetxy(y0, y1);
             isResizeSvg && this.raphael.setSize(xArr[1], yArr[1]);
-            !isNotLocate && this.raphaelScreen.setViewBox(xArr[0], yArr[0],xArr[1], yArr[1]);
+            !isNotLocate && this.raphaelScreen.setViewBox(xArr[0], yArr[0], xArr[1], yArr[1]);
             return {
                 x: x1,
                 y: y1
@@ -520,18 +520,18 @@
             shape.raphael = this.raphael;
             shape.shapeCollection = this;
             shape.raphaelScreen = this.raphaelScreen;
-            if(this.history){
+            if (this.history) {
                 shape.history = this.history;
             }
             shape.createShape();
             return shape;
         },
-        createShape: function (url, x, y, w, h, ft, shapeType,name) {
+        createShape: function (url, x, y, w, h, ft, shapeType, name) {
             if (shapeType === ShapeConfig.SHAPE_ELLIPSE) {
                 url = '#000';
             }
             return this.createGeometry({
-                facilityName : name || '',
+                facilityName: name || '',
                 geometryType: ShapeConfig.GEOMETRY_POLYGON,
                 shapeType: shapeType || ShapeConfig.SHAPE_IMAGE,
                 facilityType: ft,
@@ -544,10 +544,10 @@
                 height: h,
             });
         },
-        createLine: function (lineType, dasharray, x, y, ft, warningColor, color, border, pointSize,name) { //创建直线或者折线
+        createLine: function (lineType, dasharray, x, y, ft, warningColor, color, border, pointSize, name) { //创建直线或者折线
             // StraightLine  BrokenLine
             return this.createGeometry({
-                facilityName : name || '',
+                facilityName: name || '',
                 geometryType: ShapeConfig.GEOMETRY_POLYLINE,
                 facilityType: ft,
                 warningColor: warningColor,
@@ -564,9 +564,9 @@
                 dasharray: dasharray || null,
             });
         },
-        createText: function (text, x, y, color, ft,name) {
+        createText: function (text, x, y, color, ft, name) {
             return this.createGeometry({
-                facilityName : name || '',
+                facilityName: name || '',
                 geometryType: ShapeConfig.GEOMETRY_TEXT,
                 facilityType: ft,
                 color: color,
@@ -580,7 +580,7 @@
 
             });
         },
-        createWireLine: function (x, y, ft,name) {
+        createWireLine: function (x, y, ft, name) {
             var shapeType = ShapeConfig.SHAPE_ELLIPSE;
             var url = '';
             var size = 3;
@@ -598,7 +598,7 @@
                 size = 3;
             }
             return this.createGeometry({
-                facilityName : name || '',
+                facilityName: name || '',
                 geometryType: ShapeConfig.GEOMETRY_CURVELINE,
                 color: '#000000',
                 fillColor: '#FFFFFF',
@@ -622,7 +622,7 @@
                 pointSize: 1,
             });
         },
-        getBase64SrcOfSvgImage: function (width,height,facilityConfig,cb) { //获取svg装换成图片格式的base64地址，以callback的形式返回
+        getBase64SrcOfSvgImage: function (width, height, facilityConfig, cb) { //获取svg装换成图片格式的base64地址，以callback的形式返回
             var that = this;
             var svgXml = $('#jas_raphael').html();
             var getBase64Image = function (src, width, height, ext) {
@@ -641,11 +641,19 @@
             }
             var replaceUrl = function (sHtml) {
                 for (var a in facilityConfig) {
-                    var regexp = new RegExp(facilityConfig[a].url, 'gm');
+                    var url001 = facilityConfig[a].url;
+                    var url002 = facilityConfig[a].url.split('001').join('002');
+                    var regexp = new RegExp(url001, 'gm');
+                    var regexp2 = new RegExp(url002, 'gm');
+
                     if (sHtml.match(regexp)) {
-                        var base64 = getBase64Image(facilityConfig[a].url, facilityConfig[a].svgWidth, facilityConfig[a].svgHeight, 'png');
+                        var base64 = getBase64Image(url001, facilityConfig[a].svgWidth, facilityConfig[a].svgHeight, 'png');
                         sHtml = sHtml.replace(regexp, base64);
+                    } else if (sHtml.match(regexp2)) {
+                        var base64 = getBase64Image(url002, facilityConfig[a].svgWidth, facilityConfig[a].svgHeight, 'png');
+                        sHtml = sHtml.replace(regexp2, base64);
                     }
+
                 }
                 return sHtml;
             };
@@ -682,7 +690,7 @@
         },
 
     };
-})(ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean,facilityConfig);
+})(ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean, facilityConfig);
 
 
 //*******************************************************************************************************************************************

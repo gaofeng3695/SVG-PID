@@ -139,7 +139,7 @@
 
         this.extentBorder = 5;
         this.extent2Border = 2;
-        this.bgcolor = 'red'; //extend2的背景色
+        this.bgcolor = 'none'; //extend2的背景色
         this.hasExtent = true;
         this.hasExtent2 = true;
         this.extent = null; //虚线框
