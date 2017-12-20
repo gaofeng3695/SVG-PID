@@ -45,24 +45,24 @@ $(document).ready(function () {
 
             this.bindEvent();
 
-            // $.ajax({
-            //     url: "data/" + 'cccc' + ".json",
-            //     method: "get",
-            //     async: true,
-            //     success: function (res) {
-            //         // var res = res.filter(function(item){
-            //         //     return item.main_realtext;
-            //         // });
+            $.ajax({
+                url: "data/" + 'cccc' + ".json",
+                method: "get",
+                async: true,
+                success: function (res) {
+                    // var res = res.filter(function(item){
+                    //     return item.main_realtext;
+                    // });
 
-            //         that.collection.setSvgSizeByShapes(res, true); //设定画布范围
-            //         that.collection.createGeometrys(res, function (aShapeList) { //渲染图形
-            //             aShapeList.forEach(function (shape) {
-            //                 that.bindGeometryEvent(shape); //绑定图形事件
-            //             });
-            //             that.isLoaded = true;
-            //         },true);
-            //     }
-            // });
+                    that.collection.setSvgSizeByShapes(res, true); //设定画布范围
+                    that.collection.createGeometrys(res, function (aShapeList) { //渲染图形
+                        aShapeList.forEach(function (shape) {
+                            that.bindGeometryEvent(shape); //绑定图形事件
+                        });
+                        that.isLoaded = true;
+                    },true);
+                }
+            });
 
 
         },
@@ -153,7 +153,7 @@ $(document).ready(function () {
             $.ajax({
                 url: url,
                 method: "post",
-                async: false,
+                async: true,
                 success: function (res) {
 
                     console.log(res)
@@ -183,26 +183,28 @@ $(document).ready(function () {
                             roadStatusNull.push(res.data.group[j].groupName);
                         }
                     }
+
+                    console.log('roadStatusMain：', roadStatusMain);
+                    console.log('roadStatusSide：', roadStatusSide);
+                    console.log('roadStatusUse：', roadStatusUse);
+                    console.log('roadStatusDisable：', roadStatusDisable);
+                    console.log('roadStatusNull：', roadStatusNull);
+                    console.log('ValveClosing：', ValveClosing);
+                    console.log('processChange：', processChange);
+
+                    that.setTapClosed(ValveClosing);
+                    that.setTapBackGround(processChange);
+
+                    that.collection.setRoadsColor(roadStatusMain, 'green', '主路');
+                    that.collection.setRoadsColor(roadStatusSide, 'blue', '辅路');
+                    that.collection.setRoadsColor(roadStatusUse, 'green', '在用');
+                    that.collection.setRoadsColor(roadStatusDisable, '#333', '停用');
                 },
                 error: function () {
                     console.log('请求失败');
                 }
             });
-            // console.log('roadStatusMain：', roadStatusMain);
-            // console.log('roadStatusSide：', roadStatusSide);
-            // console.log('roadStatusUse：', roadStatusUse);
-            // console.log('roadStatusDisable：', roadStatusDisable);
-            // console.log('roadStatusNull：', roadStatusNull);
-            // console.log('ValveClosing：', ValveClosing);
-            // console.log('processChange：', processChange);
 
-            // this.setTapClosed(ValveClosing);
-            // this.setTapBackGround(processChange);
-
-            // this.collection.setRoadsColor(roadStatusMain, 'green', '主路');
-            // this.collection.setRoadsColor(roadStatusSide, 'blue', '辅路');
-            // this.collection.setRoadsColor(roadStatusUse, 'green', '在用');
-            // this.collection.setRoadsColor(roadStatusDisable, '#333', '停用');
 
         },
         setTapClosed: function(arr) {
@@ -503,12 +505,10 @@ $(document).ready(function () {
             enlargeIcon: '#enlarge',
             viewallIcon: '#overallsituation',
             notwinkleIcon: '#Broom',
-            removeSelectIcon: '#removeSelect',
-            infosearch: '#infosearch',
-            repairsearch: '#fixsearch',
-            superiorsearch: '#superiorQuery',
-            showmoreBtn: "#showmore",
-            alarmBtn: "#abnormalBut",
+
+            downloadBtn: '.downloadBtn',
+
+
             addworkBtn: "#doneadd",
             switchBtn: "#process_change",
             technicBtn: "#technology_record",
@@ -517,7 +517,6 @@ $(document).ready(function () {
         },
         init: function () {
             this.initElem();
-
             this.bindEvent();
         },
         initElem: function () {
@@ -532,7 +531,10 @@ $(document).ready(function () {
             var that = this;
 
             this.bindEvent_state();
-            this.bindEvent_DateTimePicker();
+
+            this.downloadBtn.on('click', function () { //
+                that.saveAsImage();
+            });
 
             this.viewallIcon.on('click', function () { //看全图
                 var aShapes = drawSvgObj.collection.shapeList;
@@ -546,55 +548,28 @@ $(document).ready(function () {
                 drawSvgObj.collection.clearSelect();
 
             });
-            // this.removeSelectIcon.on('click', function () { //取消选中
-            //     drawSvgObj.unselectAllShape();
-            // });
-            // this.infosearch.on('click', function () { //
-            //     that.specifiedQuery();
-            // });
-            // this.repairsearch.on('click', function () { //
-            //     that.repairQuery();
-            // });
-            // this.superiorsearch.on('click', function () { //
-            //     that.superiorQuery();
-            // });
-            // this.showmoreBtn.on('click', function () { //
-            //     that.showmore();
-            // });
-            //this.alarmBtn.on('click', function () { //
-            //that.AbnormalAlarm();
-            //});
-            this.bitShowBtn.on('click', function (e) { //
+            this.bitShowBtn.on('click', function (e) { // 显隐位号
                 drawSvgObj.showOrHideBitNumber(that.isHideBitNum);
                 that.isHideBitNum = !that.isHideBitNum;
                 var tips = that.isHideBitNum ? '显示位号' : '隐藏位号';
                 $(e.target).html(tips);
             });
-            this.addworkBtn.on('click', function () { //
+
+
+            this.addworkBtn.on('click', function () { // 发起工单
                 that.createWorkList();
             });
-            this.switchBtn.on('click', function () { //
+            this.switchBtn.on('click', function () { // 阀门开关
                 that.changeSwitcher();
             });
-            this.technicBtn.on('click', function () { //
+            this.technicBtn.on('click', function () { // 工艺转换
                 that.changeTechnic();
             });
-            this.refresh.on('click', function () { //
+            this.refresh.on('click', function () { // 刷新
             	drawSvgObj.changeState();
             });
         },
-        bindEvent_DateTimePicker() {
-            if ($.datetimepicker) {
-                $("#startDate,#endDate").datetimepicker({
-                    format: 'yyyy-mm-dd hh:ii:ss',
-                    autoclose: true,
-                    // minView: 'month',
-                    minuteStep: 5,
-                    todayHighlight: true
-                })
-            }
-        },
-        bindEvent_state: function () {
+        bindEvent_state: function () { // 按钮显示状态相关
             var that = this;
             this.stateIcon.on('mouseover', function (e) {
                 var image = e.currentTarget;
@@ -636,104 +611,39 @@ $(document).ready(function () {
                 });
             }
         },
-        specifiedQuery: function () { //pid图iframe中根据设备位号和设备编号查询
-            return;
-            if (deviceBaseTableQuery == null) {
-                var deviceBaseTableQuery = {}; //基础信息表格查询条件对象
+        saveAsImage: function () { // facilityConfig
+            var aShapes = drawSvgObj.collection.shapeList;
+            if (aShapes && aShapes.length > 0) {
+                var oSize = drawSvgObj.collection.setSvgSizeByShapes(aShapes,false,true);
             }
-            if (deviceRepairTableQuery == null) {
-                var deviceRepairTableQuery = {}; //设备维修查询条件对象
-            }
-            var deviceNo = $("#searchValueOfDeviceNo").val();
-            var deviceLocationNoQuery = $("#searchValueOfDeviceLocationNo").val();
-            deviceBaseTableQuery.deviceNo = "";
-            deviceBaseTableQuery.deviceLocationNoQuery = "";
-            deviceRepairTableQuery.assetNumberQuery = "";
-            deviceRepairTableQuery.deviceLocationNoQuery = "";
-            deviceBaseTableQuery.commonQueryCondition = "";
-            if (deviceNo) {
-                deviceBaseTableQuery.deviceNo = deviceNo;
-                deviceRepairTableQuery.assetNumberQuery = deviceNo;
-            } else if (deviceLocationNoQuery) {
-                deviceBaseTableQuery.deviceLocationNoQuery = deviceLocationNoQuery;
-                deviceRepairTableQuery.deviceLocationNoQuery = deviceLocationNoQuery;
-            }
-            $.extend(window.parent.deviceBaseTableQuery, deviceBaseTableQuery);
-            $.extend(window.parent.deviceRepairTableQuery, deviceRepairTableQuery);
-            window.parent.$("#device-base-table").bootstrapTable('refresh', {
-                silent: true
-            });
-            window.parent.$("#device-repair-table").bootstrapTable('refresh', {
-                silent: true
-            });
-        },
-        repairQuery: function () { //pid图iframe中根据设备位号和设备编号查询
-            return;
-            if (deviceRepairTableQuery == null) {
-                var deviceRepairTableQuery = {}; //设备维修查询条件对象
-            }
-            var startDate = $("#startDate").val();
-            var endDate = $("#endDate").val();
-            deviceRepairTableQuery.startDate = startDate;
-            deviceRepairTableQuery.endDate = endDate;
-            $.extend(window.parent.deviceRepairTableQuery, deviceRepairTableQuery);
-            window.parent.$("#device-repair-table").bootstrapTable('refresh', {
-                silent: true,
-                query: deviceRepairTableQuery
-            });
-            window.parent.$('#device-info-table a[href="#device-repair-info"]').tab('show');
-        },
-        superiorQuery: function () { //高级查询
-            var pageUrl = window.location.pathname;
-            if (pageUrl == "/sim/jasframework/pipeline/index.html") {
-                pageUrl = "/sim/system/device/devicecard/device_card_index.html";
-            }
-            var url = 'jasframework/querycolumn/query_panel.html?pageUrl=' + pageUrl + "&pageId=98";
-            baseDialog("homepagePid", "统一查询", url, 700, 550, ['查询(Q)', '取消(C)'], ['search()']);
-        },
-        showmore: function () {
-            if ($(".more").css("display") === "none") {
-                $(".more").css("display", "block")
-            } else {
-                $(".more").css("display", "none")
-            }
-        },
-        AbnormalAlarm: function (res) {
-            var res = res;
-            var abnormalArr = res.data.result;
-            var arrClose = [];
-            var arrOpen = [];
-            var arr = [];
-            var alarmObjs = [];
 
-            for (i = 0; i < abnormalArr.length; i++) {
-                if (abnormalArr[i].changeStatus == "关" && abnormalArr[i].deviceSteadyState == 0) {
-                    arrClose.push(abnormalArr[i].deviceLocationNo);
-                } else if (abnormalArr[i].changeStatus == "开" && abnormalArr[i].deviceSteadyState == 1) {
-                    arrOpen.push(abnormalArr[i].deviceLocationNo);
+            var width = oSize.x || 5000;
+            var height = oSize.y || 5000;
+
+            drawSvgObj.collection.getBase64SrcOfSvgImage(width,height,facilityConfig,function(base64Src){
+                var a = document.createElement('a');
+                a.href = base64Src;// 将画布内的信息导出为png图片数据
+                //console.log(a.href)
+                a.download = "工艺流程图_" + getNowDate() + '.jpg'; // 设定下载名称
+                a.click(); // 点击触发下载
+            });
+
+            var getNowDate = function () {
+                // 获取当前时间字符串
+                var now = new Date();
+                var year = now.getFullYear();
+                var month = (now.getMonth() + 1).toString();
+                var day = (now.getDate()).toString();
+                if (month.length == 1) {
+                    month = "0" + month;
                 }
-                arr.push(abnormalArr[i].deviceLocationNo);
+                if (day.length == 1) {
+                    day = "0" + day;
+                }
+                return dateTime = year + month + day;
             };
 
-            if (drawSvgObj.isHasData) {
-                if (drawSvgObj.isLoaded) {
-                    if (this.isWarning) {
-                        drawSvgObj.collection.clearTwinkle();
-                        this.isWarning = false;
-                    } else {
-                        drawSvgObj.collection.locateShapes(arr);
 
-                        drawSvgObj.collection.setTwinkleByBitNumberList(arrClose, 'red', null, null, true);
-                        drawSvgObj.collection.setTwinkleByBitNumberList(arrOpen, 'yellow', null, null, true);
-
-                        this.isWarning = true;
-                    }
-                } else {
-                    baseMsg("加载中，请稍后操作。。。");
-                }
-            } else {
-                baseMsg("当前无PID图");
-            }
         },
         createWorkList: function () { //发起工单
             var numLength = drawSvgObj.selectedShapeList.length;

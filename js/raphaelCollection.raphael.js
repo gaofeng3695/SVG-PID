@@ -450,7 +450,7 @@
             };
             drawShape(aGeos, index);
         },
-        setSvgSizeByShapes: function (aGeos, isResizeSvg) { //根据shapes获取svg的最适宜的大小
+        setSvgSizeByShapes: function (aGeos, isResizeSvg,isNotLocate) { //根据shapes获取svg的最适宜的大小
             if (!aGeos || aGeos.length < 1) {
                 return;
             }
@@ -490,7 +490,7 @@
             var xArr = resetxy(x0, x1);
             var yArr = resetxy(y0, y1);
             isResizeSvg && this.raphael.setSize(xArr[1], yArr[1]);
-            this.raphaelScreen.setViewBox(xArr[0], yArr[0],xArr[1], yArr[1]);
+            !isNotLocate && this.raphaelScreen.setViewBox(xArr[0], yArr[0],xArr[1], yArr[1]);
             return {
                 x: x1,
                 y: y1
@@ -621,7 +621,65 @@
                 border: 1,
                 pointSize: 1,
             });
-        }
+        },
+        getBase64SrcOfSvgImage: function (width,height,facilityConfig,cb) { //获取svg装换成图片格式的base64地址，以callback的形式返回
+            var that = this;
+            var svgXml = $('#jas_raphael').html();
+            var getBase64Image = function (src, width, height, ext) {
+                var image = new Image();
+                image.src = src;
+                image.width = width;
+                image.height = height;
+
+                var canvas = document.createElement("canvas");
+                canvas.width = image.width;
+                canvas.height = image.height;
+                var context = canvas.getContext("2d");
+                context.drawImage(image, 0, 0, image.width, image.height);
+                var base64 = canvas.toDataURL("image/" + ext);
+                return base64;
+            }
+            var replaceUrl = function (sHtml) {
+                for (var a in facilityConfig) {
+                    var regexp = new RegExp(facilityConfig[a].url, 'gm');
+                    if (sHtml.match(regexp)) {
+                        var base64 = getBase64Image(facilityConfig[a].url, facilityConfig[a].svgWidth, facilityConfig[a].svgHeight, 'png');
+                        sHtml = sHtml.replace(regexp, base64);
+                    }
+                }
+                return sHtml;
+            };
+            var image = new Image();
+            image.src = 'data:image/svg+xml;base64,' + window.btoa(unescape(encodeURIComponent(replaceUrl(svgXml)))); // 给图片对象写入base64编码的svg流
+            image.onload = function () {
+
+                var canvas = document.createElement('canvas'); // 准备空画布
+                canvas.width = width || $('#jas_raphael svg').width();
+                canvas.height = height || $('#jas_raphael svg').height();
+
+                var context = canvas.getContext('2d'); // 取得画布的2d绘图上下文
+                context.drawImage(image, 0, 0);
+
+                // 将canvas的透明背景设置成白色
+                var imageDataForColor = context.getImageData(0, 0,
+                    canvas.width, canvas.height);
+                for (var i = 0; i < imageDataForColor.data.length; i += 4) {
+                    // 当该像素是透明的，则设置成白色
+                    if (imageDataForColor.data[i + 3] == 0) {
+                        imageDataForColor.data[i] = 255;
+                        imageDataForColor.data[i + 1] = 255;
+                        imageDataForColor.data[i + 2] = 255;
+                        imageDataForColor.data[i + 3] = 255;
+                    }
+                }
+                context.putImageData(imageDataForColor, 0, 0);
+
+
+                var base64Src = canvas.toDataURL('image/png');
+
+                cb && cb(base64Src);
+            };
+        },
 
     };
 })(ShapeConfig, ShapeBean, PolyLineBean, CurveLineBean,facilityConfig);

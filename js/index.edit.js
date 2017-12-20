@@ -182,10 +182,10 @@ $(document).ready(function () {
             var that = this;
             if (this.history) return;
             this.history = new HistoryBean({
-                shapeCollection : this.collection,
-                cb_changed : function(index,aChanges){
+                shapeCollection: this.collection,
+                cb_changed: function (index, aChanges) {
 
-                    topToolsObj.renderHistoryBtnStyle(aChanges[index],aChanges[index + 1]);
+                    topToolsObj.renderHistoryBtnStyle(aChanges[index], aChanges[index + 1]);
 
                 }
             });
@@ -477,7 +477,7 @@ $(document).ready(function () {
             this.editSvgObj = editSvgObj;
             this.initElem();
             this.bindEvent();
-            this.renderHistoryBtnStyle(0,0);
+            this.renderHistoryBtnStyle(0, 0);
         },
         initElem: function () {
             var eles = this.elem;
@@ -746,52 +746,36 @@ $(document).ready(function () {
             });
             this.editSvgObj.history.save();
         },
-        renderHistoryBtnStyle : function(canBack,canNext){
-            if(canBack){
+        renderHistoryBtnStyle: function (canBack, canNext) {
+            if (canBack) {
                 this.backBtn.parent().show();
                 this.backBtn2.parent().hide();
-            }else{
+            } else {
                 this.backBtn.parent().hide();
                 this.backBtn2.parent().show();
             }
-            if(canNext){
+            if (canNext) {
                 this.nextBtn.parent().show();
                 this.nextBtn2.parent().hide();
-            }else{
+            } else {
                 this.nextBtn.parent().hide();
                 this.nextBtn2.parent().show();
             }
 
         },
         saveAsImage: function () { // facilityConfig
-            var svgXml = $('#jas_raphael').html();
+            var aShapes = this.editSvgObj.collection.shapeList;
+                var oSize = this.editSvgObj.collection.setSvgSizeByShapes(aShapes,false,true);
 
-            var getBase64Image = function (src, width, height, ext) {
-                var image = new Image();
-                image.src = src;
-                image.width = width;
-                image.height = height;
+            var width = (oSize && oSize.x) || 5000;
+            var height = (oSize && oSize.y) || 5000;
 
-                var canvas = document.createElement("canvas");
-                canvas.width = image.width;
-                canvas.height = image.height;
-                var context = canvas.getContext("2d");
-                context.drawImage(image, 0, 0, image.width, image.height);
-                var base64 = canvas.toDataURL("image/" + ext);
-                return base64;
-            }
-            var replaceUrl = function (sHtml) {
-                for (var a in facilityConfig) {
-                    var regexp = new RegExp(facilityConfig[a].url, 'gm');
-                    if (sHtml.match(regexp)) {
-                        var base64 = getBase64Image(facilityConfig[a].url,
-                            facilityConfig[a].svgWidth,
-                            facilityConfig[a].svgHeight, 'png');
-                        sHtml = sHtml.replace(regexp, base64);
-                    }
-                }
-                return sHtml;
-            };
+            this.editSvgObj.collection.getBase64SrcOfSvgImage(width,height,facilityConfig,function(base64Src){
+                var a = document.createElement('a');
+                a.href = base64Src;
+                a.download = "工艺流程图_" + getNowDate() + '.jpg'; // 设定下载名称
+                a.click(); // 点击触发下载
+            });
 
             var getNowDate = function () {
                 // 获取当前时间字符串
@@ -808,51 +792,9 @@ $(document).ready(function () {
                 return dateTime = year + month + day;
             };
 
-            var image = new Image();
-            image.src = 'data:image/svg+xml;base64,' +
-                window
-                .btoa(unescape(encodeURIComponent(replaceUrl(svgXml)))); // 给图片对象写入base64编码的svg流
-            image.onload = function () {
-                var canvas = document.createElement('canvas'); // 准备空画布
-                canvas.width = $('#jas_raphael svg').width();
-                canvas.height = $('#jas_raphael svg').height();
 
-                var context = canvas.getContext('2d'); // 取得画布的2d绘图上下文
-                context.drawImage(image, 0, 0);
-
-                // 将canvas的透明背景设置成白色
-                var imageDataForColor = context.getImageData(0, 0,
-                    canvas.width, canvas.height);
-                for (var i = 0; i < imageDataForColor.data.length; i += 4) {
-                    // 当该像素是透明的，则设置成白色
-                    if (imageDataForColor.data[i + 3] == 0) {
-                        imageDataForColor.data[i] = 255;
-                        imageDataForColor.data[i + 1] = 255;
-                        imageDataForColor.data[i + 2] = 255;
-                        imageDataForColor.data[i + 3] = 255;
-                    }
-                }
-                context.putImageData(imageDataForColor, 0, 0);
-
-                // 获取当前时间字符串
-                var now = new Date();
-                var year = now.getFullYear();
-                var month = (now.getMonth() + 1).toString();
-                var day = (now.getDate()).toString();
-                if (month.length == 1) {
-                    month = "0" + month;
-                }
-                if (day.length == 1) {
-                    day = "0" + day;
-                }
-                var dateTime = year + month + day;
-
-                var a = document.createElement('a');
-                a.href = canvas.toDataURL('image/png'); // 将画布内的信息导出为png图片数据
-                a.download = "工艺流程图_" + getNowDate() + '.png'; // 设定下载名称
-                a.click(); // 点击触发下载
-            };
         },
+
         save: function () {
             $("#zcdiv").css("display", "block");
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
