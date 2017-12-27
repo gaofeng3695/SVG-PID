@@ -155,6 +155,7 @@ $(document).ready(function () {
             //     }
             // });
 
+
         },
         initRaphael: function () {
             var that = this;
@@ -802,10 +803,10 @@ $(document).ready(function () {
         },
 
         save: function () {
-            $("#zcdiv").css("display", "block");
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
             var pidVersion = $("#selectStationPidVersion").val(); //版本id；如果有更新 没有是保存
+            maskTip('正在保存，请稍候。。。');
             if (!node.stationName) {
                 baseMsg("请选择具体场站");
                 stationPid.clickStation = true;
@@ -825,7 +826,7 @@ $(document).ready(function () {
         saveAs: function () { //另存为直接进行保存
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
-            $("#zcdiv").css("display", "block");
+            maskTip('正在保存，请稍候。。。');
             if (!node.stationName) {
                 baseMsg("请选择具体场站");
                 stationPid.clickStation = true;
@@ -843,8 +844,7 @@ $(document).ready(function () {
             var aShapesInfo = JSON.stringify(this.editSvgObj.collection.getGeometryAttribute());
             var node = JSON.parse(localStorage.getItem("chosenStationNode"));
             var pidVersion = $("#selectStationPidVersion").val(); //版本id
-            $("#zcdiv").css("display", "block");
-            $("#loading").text("正在发布，请稍候。。。");
+            maskTip('正在发布，请稍候。。。。');
             if (!node.stationName) {
                 baseMsg("请选择具体场站");
                 stationPid.clickStation = true;
@@ -869,6 +869,7 @@ $(document).ready(function () {
                 contentType: 'application/json;charset=utf-8',
                 success: function (res) {
                     if (res.code == "success") {
+                        maskTip();
                         if (data.isPublish == "1") {
                             baseMsg("发布成功");
                             dragIocnObj.currentEdit = false;
@@ -877,7 +878,7 @@ $(document).ready(function () {
                             dragIocnObj.currentEdit = false;
                             stationPid.initStation("save");
                         }
-                        $("#zcdiv").css("display", "none");
+
                     }
                 }
             });

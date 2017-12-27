@@ -251,6 +251,98 @@
                 }
                 this.raphaelScreen.setCenter((xmin + xmax) / 2, (ymin + ymax) / 2);
             }
+            return [xmin, ymin, xmax, ymax]
+        },
+        twinkleArea: function (aPoints, color, allTime, eachTime) {
+            var that = this;
+            color = color || 'green';
+
+            if (this._timerFortwinkleArea) {
+                clearInterval(this._timerFortwinkleArea);
+                this._pathInst && this._pathInst.attr({
+                    fill: 'none'
+                }).remove();
+            }
+
+            var path = this.getAreaPathFromRandomPointList(aPoints);
+            this._pathInst = this.raphael.path(path).attr({
+                stroke: 'none'
+            });
+
+            var switcher = false;
+            var timeAll = 0;
+            eachTime = eachTime || 800;
+            // console.log(123,this._timerFortwinkleArea)
+            this._timerFortwinkleArea = setInterval(function () {
+                if (allTime && timeAll >= allTime) {
+                    clearInterval(that._timerFortwinkleArea);
+                    that._pathInst && that._pathInst.attr({
+                        fill: 'none'
+                    }).remove();
+                }
+                switcher = !switcher;
+                var switchColor = switcher ? color : 'none';
+                that._pathInst.attr({
+                    fill: switchColor
+                });
+                timeAll += eachTime;
+            }, eachTime);
+        },
+        getAreaPathFromRandomPointList: function (aPoints) {
+            // aPoints = aPoints || [{
+            //     x: 100,
+            //     y: 100
+            // }, {
+            //     x: 100,
+            //     y: 200
+            // }, {
+            //     x: 200,
+            //     y: 300
+            // }, {
+            //     x: 280,
+            //     y: 320
+            // }, {
+            //     x: 21,
+            //     y: 390
+            // }, {
+            //     x: 221,
+            //     y: 490
+            // }, ]
+            var getNearPoint = function (point, aPoints, isLeft) {
+                var p = null; //需要的点
+                var k = null; //斜率
+                aPoints.forEach(function (item) {
+                    if (isLeft) {
+                        if (item.x - point.x >= 0) return;
+                    } else {
+                        if (item.x - point.x <= 0) return;
+                    }
+                    var _k = (item.y - point.y) / (item.x - point.x);
+                    if (k === null || _k < k) { //取偏移量最小的
+                        k = _k;
+                        p = item;
+                    }
+
+                });
+                return p;
+            }
+            var isLeft = false;
+            var aPointsInOrder = [aPoints[0]];
+            for (var i = 0; i < aPoints.length; i++) {
+                var item = aPoints[i];
+                var p = getNearPoint(aPointsInOrder[aPointsInOrder.length - 1], aPoints, isLeft);
+                if (aPointsInOrder.indexOf(p) > -1) {
+                    continue;
+                } else if (!p) {
+                    isLeft = !isLeft;
+                } else {
+                    aPointsInOrder.push(p);
+                }
+            }
+            var path = 'M' + aPointsInOrder.map(function (point) {
+                return point.x + ',' + point.y;
+            }).join('L') + 'Z';
+            return path;
         },
         removeSelectShape: function () { //移除所有被选中的shape，返回移除的shape数量
             var list = this.getSelectShape();
@@ -517,6 +609,7 @@
                 shape.lineList = [];
             }
             shape.facilityName = facilityConfig[shape.facilityType] ? facilityConfig[shape.facilityType].name : '';
+            shape.isSwitcher = facilityConfig[shape.facilityType] ? facilityConfig[shape.facilityType].isSwitcher : false;
             shape.raphael = this.raphael;
             shape.shapeCollection = this;
             shape.raphaelScreen = this.raphaelScreen;
@@ -526,7 +619,7 @@
             shape.createShape();
             return shape;
         },
-        createShape: function (url, x, y, w, h, ft, shapeType, name) {
+        createShape: function (url, x, y, w, h, ft, shapeType, name, isSwitcher) {
             if (shapeType === ShapeConfig.SHAPE_ELLIPSE) {
                 url = '#000';
             }

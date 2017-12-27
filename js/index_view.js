@@ -21,6 +21,7 @@ $(document).ready(function () {
         selectedShapeList: [], //选中的带位号的元件
 
         isCreateMarkerMode: false,
+        markerList : [],
         marker: { //自定义标记
             url: '',
             width: 30,
@@ -97,8 +98,12 @@ $(document).ready(function () {
                 var obj = localStorage.getItem("chosenStationNode");
                 if (obj) {
                     var lastStationName = localStorage.getItem("lastStationName");
-                    if (!JSON.parse(obj).stationAreaOid && JSON.parse(obj).stationOid && lastStationName != JSON.parse(obj).stationName) {
-                        window.location.reload(); //drawSvgObj.requestDataByStationId(JSON.parse(obj));
+                    if (!JSON.parse(obj).stationAreaOid && JSON.parse(obj).stationOid && lastStationName != JSON.parse(obj).stationName&&window.parent.secondindexInstance.getSizes()[0] != 0) {
+                        baseConfirm("是否切换", "是否需要重新加载PID图", function () {
+                        	window.location.reload(); //drawSvgObj.requestDataByStationId(JSON.parse(obj));
+                        }, function () {
+                        });
+
                     }
                 }
             });
@@ -285,10 +290,11 @@ $(document).ready(function () {
             };
         },
 
-        showbubble: function (shape, e) {
+        showbubble: function (shape, e,sHtmlCustom) {
             //            console.log('鼠标划上'+shape.bitNumber+'的元件',e);
             var bubble = this.bubblePanel;
             var oLoca = this.raphaelScreen.getScreenCoordinate(shape.x, shape.y);
+
             if (bubble) {
                 bubble.show();
             } else {
@@ -296,13 +302,17 @@ $(document).ready(function () {
                 $('body').append(bubble);
                 this.bubblePanel = bubble;
             }
-            var sHtml = [
-                '名称：' + (shape.facilityName || ''),
-                '位号：' + (shape.bitNumber || '')
 
-            ].join('<br/>');
+            if(sHtmlCustom){
+                bubble.html(sHtmlCustom);
+            }else{
+                var sHtml = [
+                    '名称：' + (shape.facilityName || ''),
+                    '位号：' + (shape.bitNumber || '')
+                ].join('<br/>');
+                bubble.html(sHtml);                
+            }
 
-            bubble.html(sHtml);
             bubble.css({
                 top: oLoca.y - bubble.height() - shape.shape.getBBox().height * this.raphaelScreen.zoom / 2 - 5,
                 left: oLoca.x - bubble.width() / 2,
@@ -440,6 +450,52 @@ $(document).ready(function () {
         },
         locateAreaByPointsList: function (aPonits) { // [{x,y}]
             this.collection.locateArea(aPonits);
+        },
+        createMarkersAndLocate : function(aMarkers){
+            var that = this;
+            var mouseover_timeout = null;
+
+            // aMarkers = [{
+            //     x: 213,
+            //     y : 123,
+            //     html : '位号：123<br>名称：1233',
+            //     src : '',
+            //     width : '',
+            //     height : '',
+            // }];
+            var aPoints = [];
+            aMarkers && aMarkers.forEach(function(item){
+                if(!item.x || !item.y) return;
+                aPoints.push({
+                    x: +item.x,
+                    y : +item.y
+                });
+                var src = item.src || 'image/icon_03.png';
+                var width = item.width || 30;
+                var height = item.height || 30;
+                var shape = that.collection.createShape(src, item.x, item.y, width, height);
+
+                shape.setMovable(false);
+                if(item.html){
+                    shape.overFun = function (shape, e) {
+                        clearTimeout(mouseover_timeout);
+                        mouseover_timeout = setTimeout(function () {
+                            that.showbubble(shape, e, item.html);
+                        }, 300);
+                    };
+                    shape.outFun = function (shape, e) {
+                        clearTimeout(mouseover_timeout);
+                        that.hidebubble(shape, e);
+                    };                    
+                }
+                that.markerList.push(shape);
+            });
+            this.locateAreaByPointsList(aPoints);
+        },
+        removeAllMarker : function(){
+            this.markerList.forEach(function(shape){
+                shape.remove();
+            });
         },
         openCreateMarkerMode: function (callback,url, width, height) {
             // 地图选点
@@ -691,16 +747,20 @@ $(document).ready(function () {
                     } else if (numLength != 1) {
                         baseMsg("只能选择一个元件");
                     } else {
-                        var type = drawSvgObj.selectedShapeList[0].facilityType;
-                        var bitNumber = drawSvgObj.selectedShapeList[0].bitNumber;
-                        var Oid = localStorage.getItem("stationOid")
-                        var url = 'system/device/processchange/process_change_add_edit.html?stationId=' + Oid + "&bitNumber=" + bitNumber;
-                        if (bitNumber != null && bitNumber != '' && bitNumber != 'undefined') {
-                            baseDialog(uuid(8), "阀门开关", url, 900, 600, ['发起', '取消'], ['saveData()']);
-                        } else if (type == "FACILITY_CREATETEXT") {
-                            baseMsg("请选择元件");
-                        } else {
-                            baseMsg("该元件没有位号");
+                        if( drawSvgObj.selectedShapeList[0].isSwitcher){
+                            var type = drawSvgObj.selectedShapeList[0].facilityType;
+                            var bitNumber = drawSvgObj.selectedShapeList[0].bitNumber;
+                            var Oid = localStorage.getItem("stationOid")
+                            var url = 'system/device/processchange/process_change_add_edit.html?stationId=' + Oid + "&bitNumber=" + bitNumber;
+                            if (bitNumber != null && bitNumber != '' && bitNumber != 'undefined') {
+                                baseDialog(uuid(8), "阀门开关", url, 900, 600, ['确定', '取消'], ['saveData()']);
+                            } else if (type == "FACILITY_CREATETEXT") {
+                                baseMsg("请选择元件");
+                            } else {
+                                baseMsg("该元件没有位号");
+                            }
+                        }else{
+                            baseMsg('请选择阀门进行操作');
                         }
                     }
                 } else {
@@ -721,7 +781,7 @@ $(document).ready(function () {
                             var Oid = localStorage.getItem("stationOid");
                             var groupName = drawSvgObj.selectedShapeList[0].main_realtext;
                             var url = 'system/technology/technology_record_edit.html?stationId=' + Oid + "&groupName=" + encodeURI(groupName);
-                            baseDialog(uuid(8), "工艺转换", url, 900, 500, ['发起', '取消'], ['saveData()']);
+                            baseDialog(uuid(8), "工艺转换", url, 900, 500, ['确定', '取消'], ['saveData()']);
                         } else {
                             baseMsg("请选择工艺系统");
                         }

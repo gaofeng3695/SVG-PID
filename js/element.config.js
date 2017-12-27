@@ -18,6 +18,7 @@
     window.facilityConfig = {
         'FACILITY_BAV': { //01
             name: '球阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_BAV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape01_001.svg',
@@ -30,6 +31,7 @@
         },
         'FACILITY_GAV': { //02
             name: '闸阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_GAV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape02_001.svg',
@@ -42,6 +44,7 @@
         },
         'FACILITY_GLV': { //03
             name: '截止阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_GLV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape03_001.svg',
@@ -54,6 +57,7 @@
         },
         'FACILITY_THV': { //04
             name: '节流阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_THV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape04_001.svg',
@@ -66,6 +70,7 @@
         },
         'FACILITY_FM': { //05
             name: '超声波流量计',
+            isSwitcher : false,
             facilityType: 'FACILITY_FM',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape05_001.svg',
@@ -78,6 +83,7 @@
         },
         'FACILITY_FA': { //06
             name: '阻火器',
+            isSwitcher : false,
             facilityType: 'FACILITY_FA',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape06_001.svg',
@@ -90,6 +96,7 @@
         },
         'FACILITY_BUV': { //07
             name: '蝶阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_BUV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape07_001.svg',
@@ -102,6 +109,7 @@
         },
         'FACILITY_CHV': { //08
             name: '止回阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_CHV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape08_001.svg',
@@ -114,6 +122,7 @@
         },
         'FACILITY_NV': { //09
             name: '针形阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_NV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape09_001.svg',
@@ -126,6 +135,7 @@
         },
         'FACILITY_SV': { //10
             name: '二阀组',
+            isSwitcher : true,
             facilityType: 'FACILITY_SV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape10_001.svg',
@@ -138,6 +148,7 @@
         },
         'FACILITY_PSV': { //11
             name: '安全阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_PSV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape11_001.svg',
@@ -150,6 +161,7 @@
         },
         'FACILITY_FV': { //12
             name: '五阀组',
+            isSwitcher : true,
             facilityType: 'FACILITY_FV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape12_001.svg',
@@ -162,6 +174,7 @@
         },
         'FACILITY_FXC': { //13
             name: '调压器',
+            isSwitcher : false,
             facilityType: 'FACILITY_FXC',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape13_001.svg',
@@ -174,6 +187,7 @@
         },
         'FACILITY_ZS': { //14
             name: '切断阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_ZS',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape14_001.svg',
@@ -186,6 +200,7 @@
         },
         'FACILITY_EV': { //15
             name: '电动球阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_EV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape15_001.svg',
@@ -198,6 +213,7 @@
         },
         'FACILITY_ELV': { //16
             name: '电液联动阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_ELV',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape16_001.svg',
@@ -210,6 +226,7 @@
         },
         'FACILITY_FC': { //17
             name: '流量调节阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_FC',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape17_001.svg',
@@ -222,6 +239,7 @@
         },
         'FACILITY_E': { //18
             name: '换热器',
+            isSwitcher : false,            
             facilityType: 'FACILITY_E',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape18_001.svg',
@@ -234,6 +252,7 @@
         },
         'FACILITY_FEBO': { //19
             name: '8字盲板(开启)',
+            isSwitcher : false,
             facilityType: 'FACILITY_FEBO',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape19_001.svg',
@@ -246,6 +265,7 @@
         },
         'FACILITY_FEBC': { //20
             name: '8字盲板(关闭)',
+            isSwitcher : false,
             facilityType: 'FACILITY_FEBC',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape20_001.svg',
@@ -258,6 +278,7 @@
         },
         'FACILITY_M': { //21
             name: '汇管',
+            isSwitcher : false,
             facilityType: 'FACILITY_M',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape21_001.svg',
@@ -270,6 +291,7 @@
         },
         'FACILITY_PL': { //22
             name: '清球发射器',
+            isSwitcher : false,
             facilityType: 'FACILITY_PL',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape22_001.svg',
@@ -282,6 +304,7 @@
         },
         'FACILITY_EU': { //23
             name: 'U形换热器',
+            isSwitcher : false,
             facilityType: 'FACILITY_EU',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape23_001.svg',
@@ -294,6 +317,7 @@
         },
         'FACILITY_F': { //24
             name: '卧式过滤器',
+            isSwitcher : false,
             facilityType: 'FACILITY_F',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape24_001.svg',
@@ -306,6 +330,7 @@
         },
         'FACILITY_IJ': { //25
             name: '绝缘接头',
+            isSwitcher : false,
             facilityType: 'FACILITY_IJ',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape25_001.svg',
@@ -318,6 +343,7 @@
         },
         'FACILITY_FST': { //26
             name: '放散塔',
+            isSwitcher : false,
             facilityType: 'FACILITY_FST',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape26_001.svg',
@@ -330,6 +356,7 @@
         },
         'LINE_BLACK_BOLD': { //27
             name: '实线',
+            isSwitcher : false,
             facilityType: 'LINE_BLACK_BOLD',
             geometryType: 'GEOMETRY_LINE',
             lineType: 'StraightLine',
@@ -343,6 +370,7 @@
         },
         'LINE_CONNECTIONLINE': { //33
             name: '虚线',
+            isSwitcher : false,
             facilityType: 'LINE_CONNECTIONLINE',
             geometryType: 'GEOMETRY_LINE',
             lineType: 'StraightLine',
@@ -357,6 +385,7 @@
         },
         'LINE_ACTUALBROKENLINE': { //76
             name: '实折线',
+            isSwitcher : false,
             facilityType: 'LINE_ACTUALBROKENLINE',
             geometryType: 'GEOMETRY_POLYLINE',
             lineType: 'BrokenLine',
@@ -371,6 +400,7 @@
         },
         'LINE_IMAGINARYFOLDLINE': { //77
             name: '虚折线',
+            isSwitcher : false,
             facilityType: 'LINE_IMAGINARYFOLDLINE',
             geometryType: 'GEOMETRY_POLYLINE',
             lineType: 'BrokenLine',
@@ -385,6 +415,7 @@
         },
         'LINE_WIRE': { //34
             name: '跨接线',
+            isSwitcher : false,
             facilityType: 'LINE_WIRE',
             geometryType: 'GEOMETRY_CURVELINE',
             url: 'image/tools_icon3/shape34_001.svg',
@@ -397,6 +428,7 @@
         },
         'FACILITY_CABLECONNECTION': { //35
             name: '连接点',
+            isSwitcher : false,
             facilityType: 'FACILITY_CABLECONNECTION',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape35_001.svg',
@@ -409,6 +441,7 @@
         },
         'FACILITY_SOLIDPOINT': { //78
             name: '连接点',
+            isSwitcher : false,
             facilityType: 'FACILITY_SOLIDPOINT',
             geometryType: 'GEOMETRY_POLYGON',
             shapeType: 'SHAPE_ELLIPSE',
@@ -422,6 +455,7 @@
         },
         'FACILITY_CREATETEXT': { //79
             name: '文字',
+            isSwitcher : false,
             facilityType: 'FACILITY_CREATETEXT',
             geometryType: 'GEOMETRY_TEXT',
             url: 'image/tools_icon3/shape79_001.svg',
@@ -434,6 +468,7 @@
         },
         'FACILITY_CYAN_MARK': { //37
             name: '仪表1',
+            isSwitcher : false,
             facilityType: 'FACILITY_CYAN_MARK',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape37_001.svg',
@@ -446,6 +481,7 @@
         },
         'FACILITY_RED_MARK': { //38
             name: '仪表2',
+            isSwitcher : false,
             facilityType: 'FACILITY_RED_MARK',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape38_001.svg',
@@ -458,6 +494,7 @@
         },
         'FACILITY_LEFT_MARK1': { //39
             name: '指向标1',
+            isSwitcher : false,
             facilityType: 'FACILITY_LEFT_MARK1',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape39_001.svg',
@@ -470,6 +507,7 @@
         },
         'FACILITY_RIGHT_MARK2': { //40
             name: '指向标4',
+            isSwitcher : false,
             facilityType: 'FACILITY_RIGHT_MARK2',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape40_001.svg',
@@ -482,6 +520,7 @@
         },
         'FACILITY_MARK': { //41
             name: '工艺参数节点',
+            isSwitcher : false,
             facilityType: 'FACILITY_MARK',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape41_001.svg',
@@ -494,6 +533,7 @@
         },
         'FACILITY_TRIANGLE_MARK': { //42
             name: '待定',
+            isSwitcher : false,
             facilityType: 'FACILITY_TRIANGLE_MARK',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape42_001.svg',
@@ -506,6 +546,7 @@
         },
         'FACILITY_GROUND': { //43
             name: '法兰盲板',
+            isSwitcher : false,
             facilityType: 'FACILITY_GROUND',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape43_001.svg',
@@ -518,6 +559,7 @@
         },
         'FACILITY_TRIANGLE': { //44
             name: '异径管',
+            isSwitcher : false,
             facilityType: 'FACILITY_TRIANGLE',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape44_001.svg',
@@ -530,6 +572,7 @@
         },
         'FACILITY_RIGHT_MARK1': { //47
             name: '指向标2',
+            isSwitcher : false,
             facilityType: 'FACILITY_RIGHT_MARK1',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape47_001.svg',
@@ -542,6 +585,7 @@
         },
         'FACILITY_LEFT_MARK2': { //48
             name: '指向标3',
+            isSwitcher : false,
             facilityType: 'FACILITY_LEFT_MARK2',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape48_001.svg',
@@ -554,6 +598,7 @@
         },
         'FACILITY_SHAPE1': { //49
             name: '待定',
+            isSwitcher : false,
             facilityType: 'FACILITY_SHAPE1',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape49_001.svg',
@@ -566,6 +611,7 @@
         },
         'FACILITY_SHAPE2': { //50
             name: '待定',
+            isSwitcher : false,
             facilityType: 'FACILITY_SHAPE2',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape50_001.svg',
@@ -578,6 +624,7 @@
         },
         'FACILITY_SHAPE3': { //51
             name: '待定',
+            isSwitcher : false,
             facilityType: 'FACILITY_SHAPE3',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape51_001.svg',
@@ -590,6 +637,7 @@
         },
         'FACILITY_SHAPE4': { //52
             name: '汇管',
+            isSwitcher : false,
             facilityType: 'FACILITY_SHAPE4',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape52_001.svg',
@@ -602,6 +650,7 @@
         },
         'FACILITY_SHAPE53': { //53
             name: '待定',
+            isSwitcher : false,
             facilityType: 'FACILITY_SHAPE53',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape53_001.svg',
@@ -614,6 +663,7 @@
         },
         'FACILITY_SHAPE54': { //54
             name: '加臭装置',
+            isSwitcher : false,
             facilityType: 'FACILITY_SHAPE54',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape54_001.svg',
@@ -626,6 +676,7 @@
         },
         'FACILITY_SHAPE55': { //55
             name: '待定',
+            isSwitcher : false,
             facilityType: 'FACILITY_SHAPE55',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape55_001.svg',
@@ -638,6 +689,7 @@
         },
         'FACILITY_SHAPE57': { //57
             name: '无泄漏磁力驱动泵',
+            isSwitcher : false,
             facilityType: 'FACILITY_SHAPE57',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape57_001.svg',
@@ -650,6 +702,7 @@
         },
         'FACILITY_SHAPE58': { //58
             name: '球阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_SHAPE58',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape58_001.svg',
@@ -662,6 +715,7 @@
         },
         'FACILITY_SHAPE59': { //59
             name: '针阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_SHAPE59',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape59_001.svg',
@@ -674,6 +728,7 @@
         },
         'FACILITY_SHAPE60': { //60
             name: '法兰式二阀组',
+            isSwitcher : true,
             facilityType: 'FACILITY_SHAPE60',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape60_001.svg',
@@ -686,6 +741,7 @@
         },
         'FACILITY_SHAPE61': { //61
             name: '法兰式针阀',
+            isSwitcher : true,
             facilityType: 'FACILITY_SHAPE61',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape61_001.svg',
@@ -698,6 +754,7 @@
         },
         'FACILITY_SHAPE62': { //62
             name: '气体涡轮流量计',
+            isSwitcher : false,
             facilityType: 'FACILITY_SHAPE62',
             geometryType: 'GEOMETRY_POLYLINE',
             url: 'image/tools_icon3/shape62_001.svg',
@@ -710,6 +767,7 @@
         },
         'FACILITY_ARROW63': { //63
             name: '气流方向黑',
+            isSwitcher : false,
             facilityType: 'FACILITY_ARROW63',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape63_001.svg',
@@ -722,6 +780,7 @@
         },
         'FACILITY_ARROW64': { //64
             name: '气流方向红',
+            isSwitcher : false,
             facilityType: 'FACILITY_ARROW64',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape64_001.svg',
@@ -734,6 +793,7 @@
         },
         'FACILITY_ARROW65': { //65
             name: '气流方向绿',
+            isSwitcher : false,
             facilityType: 'FACILITY_ARROW65',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape65_001.svg',
@@ -746,6 +806,7 @@
         },
         'FACILITY_ARROW66': { //66
             name: '气流方向蓝',
+            isSwitcher : false,
             facilityType: 'FACILITY_ARROW66',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape66_001.svg',
@@ -758,6 +819,7 @@
         },
         'FACILITY_ARROW67': { //67
             name: '气流方向黄',
+            isSwitcher : false,
             facilityType: 'FACILITY_ARROW67',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape67_001.svg',
@@ -770,6 +832,7 @@
         },
         'FACILITY_ARROW68': { //68
             name: '气流方向紫',
+            isSwitcher : false,
             facilityType: 'FACILITY_ARROW68',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape68_001.svg',
@@ -782,6 +845,7 @@
         },
         'FACILITY_ARROW69': { //69
             name: '气流方向青',
+            isSwitcher : false,
             facilityType: 'FACILITY_ARROW69',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape69_001.svg',
@@ -794,6 +858,7 @@
         },
         'FACILITY_ARROW70': { //70
             name: '气流方向透明',
+            isSwitcher : false,
             facilityType: 'FACILITY_ARROW70',
             geometryType: 'GEOMETRY_POLYGON',
             url: 'image/tools_icon3/shape70_001.svg',
